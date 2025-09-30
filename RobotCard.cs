@@ -39,8 +39,14 @@ namespace Fzzzt_ {
             return this._materialsGiven[3];
         }
 
-        public override string ToString() { //TODO - materials
-            return "Robot".PadRight(20) + base.ToString();
+        public override string ToString() {
+            string ret = "Robot".PadRight(20) + base.ToString();
+
+            foreach (bool m in this._materialsGiven) {
+                ret += (m ? "1" : "0").PadRight(5);
+            }
+
+            return ret;
         }
     }
 }
