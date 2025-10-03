@@ -20,15 +20,28 @@ namespace Fzzzt_ {
         //Objects representing the players
         Player player1;
         Player player2;
+        //Logic for determining which player's turn it is, if any.
+        bool isPlayer1Turn;
+        bool isPlayer2Turn;
 
         public Form1() {
             InitializeComponent();
             initDeck();
             initConveyor();
             initPlayers();
+            initLogic();
+        }
+
+        private void buttonStart_Click(object sender, EventArgs e) {
+            buttonStart.Enabled = false;
+            buttonStart.Visible = false;
+
+            //Show all the controls
+            showControls();
+
 
             //Give the players their initial cards
-            for(int i = 0; i < 4; ++i) {
+            for (int i = 0; i < 4; ++i) {
                 player1.addToHand(deck.drawCard());
             }
             for (int i = 0; i < 4; ++i) {
@@ -42,7 +55,7 @@ namespace Fzzzt_ {
             while (deck.Cards.Count > 8) {
                 setupAuction();
 
-                doAuctionRound(); //TODO
+                startAuctionRound();
 
                 //allow players to add up to 1 robot on each of their productions (auction cleanup)
             }
@@ -53,6 +66,34 @@ namespace Fzzzt_ {
             //
         }
 
+        private void showControls() {
+            //show all labels
+            label1.Visible = true;
+            label2.Visible = true;
+            label3.Visible = true;
+            label4.Visible = true;
+            label5.Visible = true;
+            label6.Visible = true;
+
+            //Show all buttons
+            buttonPlayer1AddCardToBid.Visible = true;
+            buttonPlayer1RetrieveBid.Visible = true;
+            buttonPlayer1Confirm.Visible = true;
+            buttonPlayer2AddCardToBid.Visible = true;
+            buttonPlayer2RetrieveBid.Visible = true;
+            buttonPlayer2Confirm.Visible = true;
+            buttonProductionAddCard.Visible = true;
+            buttonProductionRetrieveCard.Visible = true;
+            buttonProductionConfirm.Visible = true;
+
+            //Show all listboxes
+            listBoxConveyor.Visible = true;
+            listBoxPlayer1Hand.Visible = true;
+            listBoxPlayer2Hand.Visible = true;
+            listBoxPlayer1Bid.Visible = true;
+            listBoxPlayer2Bid.Visible = true;
+            listBoxProductionCard.Visible = true;
+        }
 
         private void test() {
             var a = deck.Cards;
@@ -103,9 +144,18 @@ namespace Fzzzt_ {
             }
         }
 
-        private void doAuctionRound() { //TODO
+        /// <summary>
+        /// Starts an auction round by setting player 1 to make their turn.
+        /// </summary>
+        /// <returns></returns>
+        private async Task startAuctionRound() { //TODO
             //p1 places bid
-            //p2 places bid
+            MessageBox.Show("Player 1, please place your bid by selecting cards to bid, and then confirming.");
+            buttonPlayer1AddCardToBid.Enabled = true;
+            buttonPlayer1RetrieveBid.Enabled = true;
+            buttonPlayer1Confirm.Enabled = true;
+            isPlayer1Turn = true;
+            isPlayer2Turn = false;
             //compare and return cards as necessary
             //repeat until out of cards
         }
@@ -135,6 +185,14 @@ namespace Fzzzt_ {
         private void initPlayers() {
             player1 = new Player();
             player2 = new Player();
+        }
+
+        /// <summary>
+        /// Initialises game logic.
+        /// </summary>
+        private void initLogic() {
+            isPlayer1Turn = false;
+            isPlayer2Turn = false;
         }
 
         /// <summary>
