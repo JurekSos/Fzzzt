@@ -13,20 +13,48 @@ namespace Fzzzt_ {
 
         //The main deck of cards in the game
         Deck deck;
+        //Objects representing the players
+        Player player1;
+        Player player2;
 
         public Form1() {
             InitializeComponent();
             initDeck();
+            initPlayers();
+
+            deck.shuffle();
+
+            test();
         }
+
+
+        private void test() {
+            var a = deck.Cards;
+
+            listBox1.Items.Add("Card Type".PadRight(20) + "Power".PadRight(10) + "Score".PadRight(10) + "Nut".PadRight(10) + "Bolt".PadRight(10) + "Gear".PadRight(10) + "Oil".PadRight(10));
+            listBox1.Items.Add("");
+
+            foreach(Card c in a) {
+                listBox1.Items.Add(c);
+            }
+        }
+
 
         /// <summary>
         /// Initialises the main deck with all the cards for a 2 player game.
         /// </summary>
         private void initDeck() {
+            deck = new Deck();
+
             initPlayerCards();
             initRobotCards();
             initProductionCards();
             initFzzztCards();
+        }
+
+        private void initPlayers() {
+            player1 = new Player();
+            player2 = new Player();
         }
 
         /// <summary>

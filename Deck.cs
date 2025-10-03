@@ -39,7 +39,17 @@ namespace Fzzzt_ {
         /// Shuffles the deck
         /// </summary>
         public void shuffle() {
-            //TODO
+            List<Card> shuffledDeck = new List<Card>();
+
+            int numCards = this._cards.Count;
+
+            Random rand = new Random();
+
+            for(int i = 0; i < numCards; ++i) {
+                shuffledDeck.Add(this.drawCard(rand.Next(numCards - i)));
+            }
+
+            this._cards = shuffledDeck;
         }
     }
 }

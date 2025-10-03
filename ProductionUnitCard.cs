@@ -49,7 +49,7 @@ namespace Fzzzt_ {
             string ret = "Production Unit".PadRight(20) + base.ToString();
 
             foreach(bool m in this._materialsNeeded) {
-                ret += (m ? "1" : "0").PadRight(5);
+                ret += (m ? "1" : "0").PadRight(10);
             }
 
             return ret;

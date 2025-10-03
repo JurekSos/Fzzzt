@@ -41,7 +41,7 @@ namespace Fzzzt_ {
         }
 
         public override string ToString() {
-            return this.BidPower.ToString().PadRight(5) + this.Score.ToString().PadRight(5);
+            return this.BidPower.ToString().PadRight(10) + this.Score.ToString().PadRight(10);
         }
     }
 }

@@ -43,7 +43,7 @@ namespace Fzzzt_ {
             string ret = "Robot".PadRight(20) + base.ToString();
 
             foreach (bool m in this._materialsGiven) {
-                ret += (m ? "1" : "0").PadRight(5);
+                ret += (m ? "1" : "0").PadRight(10);
             }
 
             return ret;
