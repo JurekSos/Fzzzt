@@ -19,22 +19,42 @@ namespace Fzzzt_ {
             this._materialsGiven = materialsGiven;
         }
 
+        /// <summary>
+        /// An array representing what materials the robot card provides.
+        /// Each index represents nuts, bolts, gears, and oil, respectively.
+        /// </summary>
         public bool[] Materials {
             get { return this._materialsGiven; }
         }
 
+        /// <summary>
+        /// Returns a bool representing if the robot card provides the nut material.
+        /// </summary>
+        /// <returns></returns>
         public bool givesNut() {
             return this._materialsGiven[0];
         }
 
+        /// <summary>
+        /// Returns a bool representing if the robot card provides the bolt material.
+        /// </summary>
+        /// <returns></returns>
         public bool givesBolt() {
             return this._materialsGiven[1];
         }
 
+        /// <summary>
+        /// Returns a bool representing if the robot card provides the gear material.
+        /// </summary>
+        /// <returns></returns>
         public bool givesGear() {
             return this._materialsGiven[2];
         }
 
+        /// <summary>
+        /// Returns a bool representing if the robot card provides the oil material.
+        /// </summary>
+        /// <returns></returns>
         public bool givesOil() {
             return this._materialsGiven[3];
         }

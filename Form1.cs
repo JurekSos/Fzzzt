@@ -7,12 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
+
 
 namespace Fzzzt_ {
     public partial class Form1 : Form {
 
         //The main deck of cards in the game
         Deck deck;
+        //A deck for the cards on the conveyor that haven't been revealed yet
+        Deck conveyor;
         //Objects representing the players
         Player player1;
         Player player2;
@@ -20,25 +24,91 @@ namespace Fzzzt_ {
         public Form1() {
             InitializeComponent();
             initDeck();
+            initConveyor();
             initPlayers();
 
+            //Give the players their initial cards
+            for(int i = 0; i < 4; ++i) {
+                player1.addToHand(deck.drawCard());
+            }
+            for (int i = 0; i < 4; ++i) {
+                player2.addToHand(deck.drawCard());
+            }
+
+            //Shuffle the deck before starting
             deck.shuffle();
 
             test();
+            while (deck.Cards.Count > 8) {
+                setupAuction();
+
+                doAuctionRound(); //TODO
+
+                //allow players to add up to 1 robot on each of their productions (auction cleanup)
+            }
+            //Do final allocating of robot cards to production cards
+
+            //Make players decide on material distribution
+
+            //
         }
 
 
         private void test() {
             var a = deck.Cards;
+            var b = player1.Hand.Cards;
+            var c = player2.Hand.Cards;
 
-            listBox1.Items.Add("Card Type".PadRight(20) + "Power".PadRight(10) + "Score".PadRight(10) + "Nut".PadRight(10) + "Bolt".PadRight(10) + "Gear".PadRight(10) + "Oil".PadRight(10));
-            listBox1.Items.Add("");
+            listBoxConveyor.Items.Add("Card Type".PadRight(20) + "Power".PadRight(10) + "Score".PadRight(10) + "Nut".PadRight(10) + "Bolt".PadRight(10) + "Gear".PadRight(10) + "Oil".PadRight(10));
+            listBoxConveyor.Items.Add("");
 
-            foreach(Card c in a) {
-                listBox1.Items.Add(c);
+            listBoxPlayer1Hand.Items.Add("Card Type".PadRight(20) + "Power".PadRight(10) + "Score".PadRight(10) + "Nut".PadRight(10) + "Bolt".PadRight(10) + "Gear".PadRight(10) + "Oil".PadRight(10));
+            listBoxPlayer1Hand.Items.Add("");
+
+            listBoxPlayer2Hand.Items.Add("Card Type".PadRight(20) + "Power".PadRight(10) + "Score".PadRight(10) + "Nut".PadRight(10) + "Bolt".PadRight(10) + "Gear".PadRight(10) + "Oil".PadRight(10));
+            listBoxPlayer2Hand.Items.Add("");
+
+            foreach (Card C in a) {
+                listBoxConveyor.Items.Add(C);
+            }
+            foreach (Card C in b) {
+                listBoxPlayer1Hand.Items.Add(C);
+            }
+            foreach (Card C in c) {
+                listBoxPlayer2Hand.Items.Add(C);
             }
         }
 
+        /// <summary>
+        /// Sets up the auction stage of the game.
+        /// </summary>
+        private void setupAuction() {
+            for(int i = 0; i < 8; ++i) {
+                conveyor.addCard(deck.drawCard());
+            }
+
+            //Set up the listbox
+            listBoxConveyor.Items.Add("Cards remaining: 8");
+            listBoxConveyor.Items.Add("Card Type".PadRight(20) + "Power".PadRight(10) + "Score".PadRight(10) + "Nut".PadRight(10) + "Bolt".PadRight(10) + "Gear".PadRight(10) + "Oil".PadRight(10));
+            listBoxConveyor.Items.Add("");
+
+            //Take the first card from the conveyor
+            Card temp = conveyor.drawCard();
+            //Add the card to the listbox
+            listBoxConveyor.Items.Add(temp);
+            //Check the card's conveyor belt number and add more cards to the listbox if necessary
+            int loopMax = temp.ConveyorBeltNumber - 1;
+            for(int i = 0; i < loopMax; ++i) {
+                listBoxConveyor.Items.Add(conveyor.drawCard());
+            }
+        }
+
+        private void doAuctionRound() { //TODO
+            //p1 places bid
+            //p2 places bid
+            //compare and return cards as necessary
+            //repeat until out of cards
+        }
 
         /// <summary>
         /// Initialises the main deck with all the cards for a 2 player game.
@@ -52,6 +122,16 @@ namespace Fzzzt_ {
             initFzzztCards();
         }
 
+        /// <summary>
+        /// Initialises the deck that stores the cards on the conveyor that haven't been revealed yet
+        /// </summary>
+        private void initConveyor() {
+            conveyor = new Deck();
+        }
+
+        /// <summary>
+        /// Initialises the players
+        /// </summary>
         private void initPlayers() {
             player1 = new Player();
             player2 = new Player();

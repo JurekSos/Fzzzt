@@ -25,22 +25,42 @@ namespace Fzzzt_ {
             this._materialsNeeded = materialsNeeded;
         }
 
+        /// <summary>
+        /// An array representing what materials the production unit requires.
+        /// Each index represents nuts, bolts, gears, and oil, respectively.
+        /// </summary>
         public bool[] MaterialsNeeded {
             get { return this._materialsNeeded; }
         }
 
+        /// <summary>
+        /// Returns a bool representing if the production unit requires the nut material.
+        /// </summary>
+        /// <returns></returns>
         public bool givesNut() {
             return this._materialsNeeded[0];
         }
 
+        /// <summary>
+        /// Returns a bool representing if the production unit requires the bolt material.
+        /// </summary>
+        /// <returns></returns>
         public bool givesBolt() {
             return this._materialsNeeded[1];
         }
 
+        /// <summary>
+        /// Returns a bool representing if the production unit requires the gear material.
+        /// </summary>
+        /// <returns></returns>
         public bool givesGear() {
             return this._materialsNeeded[2];
         }
 
+        /// <summary>
+        /// Returns a bool representing if the production unit requires the oil material.
+        /// </summary>
+        /// <returns></returns>
         public bool givesOil() {
             return this._materialsNeeded[3];
         }
