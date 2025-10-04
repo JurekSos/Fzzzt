@@ -49,16 +49,15 @@
             // 
             // listBoxConveyor
             // 
-            this.listBoxConveyor.Enabled = false;
             this.listBoxConveyor.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listBoxConveyor.FormattingEnabled = true;
             this.listBoxConveyor.ItemHeight = 18;
             this.listBoxConveyor.Location = new System.Drawing.Point(12, 240);
             this.listBoxConveyor.Name = "listBoxConveyor";
-            this.listBoxConveyor.SelectionMode = System.Windows.Forms.SelectionMode.None;
             this.listBoxConveyor.Size = new System.Drawing.Size(774, 400);
             this.listBoxConveyor.TabIndex = 0;
             this.listBoxConveyor.Visible = false;
+            this.listBoxConveyor.SelectedIndexChanged += new System.EventHandler(this.listBoxConveyor_SelectedIndexChanged);
             // 
             // listBoxPlayer1Hand
             // 
@@ -151,6 +150,7 @@
             this.buttonPlayer1AddCardToBid.Text = "Add Selected Card";
             this.buttonPlayer1AddCardToBid.UseVisualStyleBackColor = true;
             this.buttonPlayer1AddCardToBid.Visible = false;
+            this.buttonPlayer1AddCardToBid.Click += new System.EventHandler(this.buttonPlayer1AddCardToBid_Click);
             // 
             // buttonPlayer1RetrieveBid
             // 
@@ -162,6 +162,7 @@
             this.buttonPlayer1RetrieveBid.Text = "Retrieve Selected Card";
             this.buttonPlayer1RetrieveBid.UseVisualStyleBackColor = true;
             this.buttonPlayer1RetrieveBid.Visible = false;
+            this.buttonPlayer1RetrieveBid.Click += new System.EventHandler(this.buttonPlayer1RetrieveBid_Click);
             // 
             // buttonPlayer1Confirm
             // 
@@ -173,6 +174,7 @@
             this.buttonPlayer1Confirm.Text = "Confirm";
             this.buttonPlayer1Confirm.UseVisualStyleBackColor = true;
             this.buttonPlayer1Confirm.Visible = false;
+            this.buttonPlayer1Confirm.Click += new System.EventHandler(this.buttonPlayer1Confirm_Click);
             // 
             // listBoxProductionCard
             // 
