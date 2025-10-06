@@ -23,6 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.listBoxConveyor = new System.Windows.Forms.ListBox();
             this.listBoxPlayer1Hand = new System.Windows.Forms.ListBox();
             this.listBoxPlayer2Hand = new System.Windows.Forms.ListBox();
@@ -45,6 +46,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // listBoxConveyor
@@ -117,6 +120,7 @@
             this.buttonPlayer2AddCardToBid.Text = "Add Selected Card";
             this.buttonPlayer2AddCardToBid.UseVisualStyleBackColor = true;
             this.buttonPlayer2AddCardToBid.Visible = false;
+            this.buttonPlayer2AddCardToBid.Click += new System.EventHandler(this.buttonPlayer2AddCardToBid_Click);
             // 
             // buttonPlayer2RetrieveBid
             // 
@@ -128,6 +132,7 @@
             this.buttonPlayer2RetrieveBid.Text = "Retrieve Selected Card";
             this.buttonPlayer2RetrieveBid.UseVisualStyleBackColor = true;
             this.buttonPlayer2RetrieveBid.Visible = false;
+            this.buttonPlayer2RetrieveBid.Click += new System.EventHandler(this.buttonPlayer2RetrieveBid_Click);
             // 
             // buttonPlayer2Confirm
             // 
@@ -139,6 +144,7 @@
             this.buttonPlayer2Confirm.Text = "Confirm";
             this.buttonPlayer2Confirm.UseVisualStyleBackColor = true;
             this.buttonPlayer2Confirm.Visible = false;
+            this.buttonPlayer2Confirm.Click += new System.EventHandler(this.buttonPlayer2Confirm_Click);
             // 
             // buttonPlayer1AddCardToBid
             // 
@@ -298,11 +304,35 @@
             this.buttonStart.UseVisualStyleBackColor = true;
             this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(795, 283);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(778, 13);
+            this.label7.TabIndex = 25;
+            this.label7.Text = resources.GetString("label7.Text");
+            this.label7.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.label7.Visible = false;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(795, 568);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(778, 13);
+            this.label8.TabIndex = 26;
+            this.label8.Text = resources.GetString("label8.Text");
+            this.label8.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.label8.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1584, 861);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.buttonStart);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
@@ -357,6 +387,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button buttonStart;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
     }
 }
 
