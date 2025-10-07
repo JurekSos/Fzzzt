@@ -24,6 +24,10 @@ namespace Fzzzt_ {
             get { return new ReadOnlyCollection<Card>(this._cards); }
         }
 
+        public int Count {
+            get { return this._cards.Count; }
+        }
+
         /// <summary>
         /// Returns a card at the given position, by default 0, then removes that card from the deck.
         /// </summary>

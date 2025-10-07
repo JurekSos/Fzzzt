@@ -36,9 +36,7 @@
             this.buttonPlayer1RetrieveBid = new System.Windows.Forms.Button();
             this.buttonPlayer1Confirm = new System.Windows.Forms.Button();
             this.listBoxProductionCard = new System.Windows.Forms.ListBox();
-            this.buttonProductionAddCard = new System.Windows.Forms.Button();
-            this.buttonProductionRetrieveCard = new System.Windows.Forms.Button();
-            this.buttonProductionConfirm = new System.Windows.Forms.Button();
+            this.buttonNoAddProd = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -48,6 +46,12 @@
             this.buttonStart = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.buttonAddProd = new System.Windows.Forms.Button();
+            this.radioButtonNut = new System.Windows.Forms.RadioButton();
+            this.radioButtonBolt = new System.Windows.Forms.RadioButton();
+            this.radioButtonGear = new System.Windows.Forms.RadioButton();
+            this.radioButtonOil = new System.Windows.Forms.RadioButton();
+            this.buttonProductionMaterialConfirm = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listBoxConveyor
@@ -194,38 +198,17 @@
             this.listBoxProductionCard.TabIndex = 14;
             this.listBoxProductionCard.Visible = false;
             // 
-            // buttonProductionAddCard
+            // buttonNoAddProd
             // 
-            this.buttonProductionAddCard.Enabled = false;
-            this.buttonProductionAddCard.Location = new System.Drawing.Point(798, 509);
-            this.buttonProductionAddCard.Name = "buttonProductionAddCard";
-            this.buttonProductionAddCard.Size = new System.Drawing.Size(150, 40);
-            this.buttonProductionAddCard.TabIndex = 15;
-            this.buttonProductionAddCard.Text = "Add Selected Card";
-            this.buttonProductionAddCard.UseVisualStyleBackColor = true;
-            this.buttonProductionAddCard.Visible = false;
-            // 
-            // buttonProductionRetrieveCard
-            // 
-            this.buttonProductionRetrieveCard.Enabled = false;
-            this.buttonProductionRetrieveCard.Location = new System.Drawing.Point(1110, 509);
-            this.buttonProductionRetrieveCard.Name = "buttonProductionRetrieveCard";
-            this.buttonProductionRetrieveCard.Size = new System.Drawing.Size(150, 40);
-            this.buttonProductionRetrieveCard.TabIndex = 16;
-            this.buttonProductionRetrieveCard.Text = "Retrieve Selected Card";
-            this.buttonProductionRetrieveCard.UseVisualStyleBackColor = true;
-            this.buttonProductionRetrieveCard.Visible = false;
-            // 
-            // buttonProductionConfirm
-            // 
-            this.buttonProductionConfirm.Enabled = false;
-            this.buttonProductionConfirm.Location = new System.Drawing.Point(1422, 509);
-            this.buttonProductionConfirm.Name = "buttonProductionConfirm";
-            this.buttonProductionConfirm.Size = new System.Drawing.Size(150, 40);
-            this.buttonProductionConfirm.TabIndex = 17;
-            this.buttonProductionConfirm.Text = "Confirm";
-            this.buttonProductionConfirm.UseVisualStyleBackColor = true;
-            this.buttonProductionConfirm.Visible = false;
+            this.buttonNoAddProd.Enabled = false;
+            this.buttonNoAddProd.Location = new System.Drawing.Point(798, 509);
+            this.buttonNoAddProd.Name = "buttonNoAddProd";
+            this.buttonNoAddProd.Size = new System.Drawing.Size(150, 40);
+            this.buttonNoAddProd.TabIndex = 15;
+            this.buttonNoAddProd.Text = "Don\'t Add Card";
+            this.buttonNoAddProd.UseVisualStyleBackColor = true;
+            this.buttonNoAddProd.Visible = false;
+            this.buttonNoAddProd.Click += new System.EventHandler(this.buttonNoAddProd_Click);
             // 
             // label1
             // 
@@ -326,11 +309,92 @@
             this.label8.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.label8.Visible = false;
             // 
+            // buttonAddProd
+            // 
+            this.buttonAddProd.Enabled = false;
+            this.buttonAddProd.Location = new System.Drawing.Point(1035, 509);
+            this.buttonAddProd.Name = "buttonAddProd";
+            this.buttonAddProd.Size = new System.Drawing.Size(150, 40);
+            this.buttonAddProd.TabIndex = 27;
+            this.buttonAddProd.Text = "Add Selected Card";
+            this.buttonAddProd.UseVisualStyleBackColor = true;
+            this.buttonAddProd.Visible = false;
+            this.buttonAddProd.Click += new System.EventHandler(this.buttonAddProd_Click);
+            // 
+            // radioButtonNut
+            // 
+            this.radioButtonNut.AutoSize = true;
+            this.radioButtonNut.Enabled = false;
+            this.radioButtonNut.Location = new System.Drawing.Point(1255, 509);
+            this.radioButtonNut.Name = "radioButtonNut";
+            this.radioButtonNut.Size = new System.Drawing.Size(42, 17);
+            this.radioButtonNut.TabIndex = 28;
+            this.radioButtonNut.TabStop = true;
+            this.radioButtonNut.Text = "Nut";
+            this.radioButtonNut.UseVisualStyleBackColor = true;
+            this.radioButtonNut.Visible = false;
+            // 
+            // radioButtonBolt
+            // 
+            this.radioButtonBolt.AutoSize = true;
+            this.radioButtonBolt.Enabled = false;
+            this.radioButtonBolt.Location = new System.Drawing.Point(1346, 509);
+            this.radioButtonBolt.Name = "radioButtonBolt";
+            this.radioButtonBolt.Size = new System.Drawing.Size(43, 17);
+            this.radioButtonBolt.TabIndex = 29;
+            this.radioButtonBolt.TabStop = true;
+            this.radioButtonBolt.Text = "Bolt";
+            this.radioButtonBolt.UseVisualStyleBackColor = true;
+            this.radioButtonBolt.Visible = false;
+            // 
+            // radioButtonGear
+            // 
+            this.radioButtonGear.AutoSize = true;
+            this.radioButtonGear.Enabled = false;
+            this.radioButtonGear.Location = new System.Drawing.Point(1255, 530);
+            this.radioButtonGear.Name = "radioButtonGear";
+            this.radioButtonGear.Size = new System.Drawing.Size(48, 17);
+            this.radioButtonGear.TabIndex = 30;
+            this.radioButtonGear.TabStop = true;
+            this.radioButtonGear.Text = "Gear";
+            this.radioButtonGear.UseVisualStyleBackColor = true;
+            this.radioButtonGear.Visible = false;
+            // 
+            // radioButtonOil
+            // 
+            this.radioButtonOil.AutoSize = true;
+            this.radioButtonOil.Enabled = false;
+            this.radioButtonOil.Location = new System.Drawing.Point(1346, 532);
+            this.radioButtonOil.Name = "radioButtonOil";
+            this.radioButtonOil.Size = new System.Drawing.Size(37, 17);
+            this.radioButtonOil.TabIndex = 31;
+            this.radioButtonOil.TabStop = true;
+            this.radioButtonOil.Text = "Oil";
+            this.radioButtonOil.UseVisualStyleBackColor = true;
+            this.radioButtonOil.Visible = false;
+            // 
+            // buttonProductionMaterialConfirm
+            // 
+            this.buttonProductionMaterialConfirm.Enabled = false;
+            this.buttonProductionMaterialConfirm.Location = new System.Drawing.Point(1422, 511);
+            this.buttonProductionMaterialConfirm.Name = "buttonProductionMaterialConfirm";
+            this.buttonProductionMaterialConfirm.Size = new System.Drawing.Size(150, 40);
+            this.buttonProductionMaterialConfirm.TabIndex = 32;
+            this.buttonProductionMaterialConfirm.Text = "Confirm";
+            this.buttonProductionMaterialConfirm.UseVisualStyleBackColor = true;
+            this.buttonProductionMaterialConfirm.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1584, 861);
+            this.Controls.Add(this.buttonProductionMaterialConfirm);
+            this.Controls.Add(this.radioButtonOil);
+            this.Controls.Add(this.radioButtonGear);
+            this.Controls.Add(this.radioButtonBolt);
+            this.Controls.Add(this.radioButtonNut);
+            this.Controls.Add(this.buttonAddProd);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.buttonStart);
@@ -340,9 +404,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.buttonProductionConfirm);
-            this.Controls.Add(this.buttonProductionRetrieveCard);
-            this.Controls.Add(this.buttonProductionAddCard);
+            this.Controls.Add(this.buttonNoAddProd);
             this.Controls.Add(this.listBoxProductionCard);
             this.Controls.Add(this.buttonPlayer1Confirm);
             this.Controls.Add(this.buttonPlayer1RetrieveBid);
@@ -377,9 +439,7 @@
         private System.Windows.Forms.Button buttonPlayer1RetrieveBid;
         private System.Windows.Forms.Button buttonPlayer1Confirm;
         private System.Windows.Forms.ListBox listBoxProductionCard;
-        private System.Windows.Forms.Button buttonProductionAddCard;
-        private System.Windows.Forms.Button buttonProductionRetrieveCard;
-        private System.Windows.Forms.Button buttonProductionConfirm;
+        private System.Windows.Forms.Button buttonNoAddProd;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
@@ -389,6 +449,12 @@
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button buttonAddProd;
+        private System.Windows.Forms.RadioButton radioButtonNut;
+        private System.Windows.Forms.RadioButton radioButtonBolt;
+        private System.Windows.Forms.RadioButton radioButtonGear;
+        private System.Windows.Forms.RadioButton radioButtonOil;
+        private System.Windows.Forms.Button buttonProductionMaterialConfirm;
     }
 }
 

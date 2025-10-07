@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -8,11 +9,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 
 namespace Fzzzt_ {
     public partial class Form1 : Form {
         Action<int> showPlayerWonBid = (int x) => MessageBox.Show("Player " + x + " has won the bid.");
+        Action<int> showPlayerBidInstruction = (int x) => MessageBox.Show("Player " + x + ", please place your bid by selecting cards to bid, and then confirming." +
+                                                                          "\nIf you are out of cards, then just click the confirm button.");
+        Action<int> showAuctionCleanupInstruction = (int x) => MessageBox.Show("Player " + x + ", please select up to one card to add to the highlighted production card.");
 
         const string CARD_LAYOUT_KEY = "Card Type           Power     Score     Nuts      Bolts     Gears     Oil       ";
         const string BID_STRENGTH_STRING = "Current bid strength: ";
@@ -61,14 +66,11 @@ namespace Fzzzt_ {
             deck.shuffle();
 
             //while (deck.Cards.Count > 8) {
-                setupAuction();
+            setupAuction();
 
-                startAuctionRound();
+            startAuctionRound();
 
-                //compare and return cards as necessary
-                //repeat until out of cards
-
-                //allow players to add up to 1 robot on each of their productions (auction cleanup)
+            //allow players to add up to 1 robot on each of their productions (auction cleanup)
             //}
             //Do final allocating of robot cards to production cards
 
@@ -95,9 +97,15 @@ namespace Fzzzt_ {
             buttonPlayer2AddCardToBid.Visible = true;
             buttonPlayer2RetrieveBid.Visible = true;
             buttonPlayer2Confirm.Visible = true;
-            buttonProductionAddCard.Visible = true;
-            buttonProductionRetrieveCard.Visible = true;
-            buttonProductionConfirm.Visible = true;
+            buttonAddProd.Visible = true;
+            buttonNoAddProd.Visible = true;
+            buttonProductionMaterialConfirm.Visible = true;
+
+            //Show the radio buttons
+            radioButtonNut.Visible = true;
+            radioButtonBolt.Visible = true;
+            radioButtonGear.Visible = true;
+            radioButtonOil.Visible = true;
 
             //Show all listboxes
             listBoxConveyor.Visible = true;
@@ -108,36 +116,11 @@ namespace Fzzzt_ {
             listBoxProductionCard.Visible = true;
         }
 
-        private void test() {
-            var a = deck.Cards;
-            var b = player1.Hand.Cards;
-            var c = player2.Hand.Cards;
-
-            listBoxConveyor.Items.Add("Card Type".PadRight(20) + "Power".PadRight(10) + "Score".PadRight(10) + "Nut".PadRight(10) + "Bolt".PadRight(10) + "Gear".PadRight(10) + "Oil".PadRight(10));
-            listBoxConveyor.Items.Add("");
-
-            listBoxPlayer1Hand.Items.Add("Card Type".PadRight(20) + "Power".PadRight(10) + "Score".PadRight(10) + "Nut".PadRight(10) + "Bolt".PadRight(10) + "Gear".PadRight(10) + "Oil".PadRight(10));
-            listBoxPlayer1Hand.Items.Add("");
-
-            listBoxPlayer2Hand.Items.Add("Card Type".PadRight(20) + "Power".PadRight(10) + "Score".PadRight(10) + "Nut".PadRight(10) + "Bolt".PadRight(10) + "Gear".PadRight(10) + "Oil".PadRight(10));
-            listBoxPlayer2Hand.Items.Add("");
-
-            foreach (Card C in a) {
-                listBoxConveyor.Items.Add(C);
-            }
-            foreach (Card C in b) {
-                listBoxPlayer1Hand.Items.Add(C);
-            }
-            foreach (Card C in c) {
-                listBoxPlayer2Hand.Items.Add(C);
-            }
-        }
-
         /// <summary>
         /// Sets up the auction stage of the game.
         /// </summary>
         private void setupAuction() {
-            for(int i = 0; i < 8; ++i) {
+            for (int i = 0; i < 8; ++i) {
                 conveyor.addCard(deck.drawCard());
             }
 
@@ -152,7 +135,7 @@ namespace Fzzzt_ {
             listBoxConveyor.Items.Add(temp);
             //Check the card's conveyor belt number and add more cards to the listbox if necessary
             int loopMax = temp.ConveyorBeltNumber - 1;
-            for(int i = 0; i < loopMax; ++i) {
+            for (int i = 0; i < loopMax; ++i) {
                 listBoxConveyor.Items.Add(conveyor.drawCard());
             }
 
@@ -168,7 +151,7 @@ namespace Fzzzt_ {
             player1IsChief = true;
             player2IsChief = false;
             //p1 places bid
-            MessageBox.Show("Player 1, please place your bid by selecting cards to bid, and then confirming.");
+            showPlayerBidInstruction(1);
 
             buttonPlayer1AddCardToBid.Enabled = true;
             buttonPlayer1RetrieveBid.Enabled = true;
@@ -231,7 +214,7 @@ namespace Fzzzt_ {
         /// Initialises the players' cards and adds them to the main deck
         /// </summary>
         private void initPlayerCards() {
-            this.deck.addCard(new RobotCard(1, 1, 4, new bool[]{ false, true, true, false }));
+            this.deck.addCard(new RobotCard(1, 1, 4, new bool[] { false, true, true, false }));
             this.deck.addCard(new RobotCard(2, 2, 4, new bool[] { false, false, false, true }));
             this.deck.addCard(new RobotCard(3, 2, 2, new bool[] { true, false, false, false }));
             this.deck.addCard(new MechanicCard());
@@ -289,7 +272,7 @@ namespace Fzzzt_ {
             this.deck.addCard(new RobotCard(0, 0, 8, new bool[] { true, true, true, true }));
             this.deck.addCard(new RobotCard(0, 0, 8, new bool[] { true, true, true, true }));
         }
-        
+
         /// <summary>
         /// Initialises all the production cards and adds them to the main deck
         /// </summary>
@@ -322,108 +305,116 @@ namespace Fzzzt_ {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void buttonPlayer1Confirm_Click(object sender, EventArgs e) {
-            if(listBoxPlayer1Bid.Items.Count == 3) {
-                MessageBox.Show("You must bid with at least one card.");
-                return;
-            } else {
-                if (player1IsChief) {
-                    chiefBid = new List<Card>();
-                    for (int i = 3; i < listBoxPlayer1Bid.Items.Count; ++i)
-                    {
-                        chiefBid.Add((Card)listBoxPlayer1Bid.Items[i]);
-                    }
-
-                    listBoxPlayer1Bid.Items.Clear();
-                    listBoxPlayer1Bid.Items.Add("Cards bid: " + chiefBid.Count);
-                    listBoxPlayer1Bid.SelectedIndex = -1;
-                    listBoxPlayer1Bid.Enabled = false;
-
-                    listBoxPlayer1Hand.Items.Clear();
-                    listBoxPlayer1Hand.SelectedIndex = -1;
-                    listBoxPlayer1Hand.Enabled = false;
-
-                    buttonPlayer1AddCardToBid.Enabled = false;
-                    buttonPlayer1RetrieveBid.Enabled = false;
-                    buttonPlayer1Confirm.Enabled = false;
-
-                    MessageBox.Show("Player 2, please place your bid by selecting cards to bid, and then confirming.");
-
-                    listBoxPlayer2Hand.Enabled = true;
-                    listBoxPlayer2Bid.Enabled = true;
-
-                    buttonPlayer2AddCardToBid.Enabled = true;
-                    buttonPlayer2RetrieveBid.Enabled = true;
-                    buttonPlayer2Confirm.Enabled = true;
-
-                    refreshListBoxPlayer2Hand();
-
-                    listBoxPlayer2Bid.Items.Add(BID_STRENGTH_STRING + "0");
-                    listBoxPlayer2Bid.Items.Add(CARD_LAYOUT_KEY);
-                    listBoxPlayer2Bid.Items.Add("");
-
-                    isPlayer2Turn = true;
-                    isPlayer1Turn = false;
-                } else {
-                    int player1BidStrength = 0;
-                    int player2BidStrength = 0;
-
-                    for (int i = 0; i < chiefBid.Count; ++i) {
-                        player2BidStrength += chiefBid[i].BidPower;
-                    }
-                    for (int i = 3; i < listBoxPlayer2Bid.Items.Count; ++i) {
-                        player1BidStrength += ((Card)listBoxPlayer2Bid.Items[i]).BidPower;
-                    }
-
-                    //Clear player 1's listboxes here to avoid revealing information to to other player.
-                    listBoxPlayer1Hand.Items.Clear();
-                    listBoxPlayer1Bid.Items.Clear();
-
-                    Card boughtCard = (Card)listBoxConveyor.Items[listBoxConveyor.SelectedIndex];
-                    listBoxConveyor.Items.RemoveAt(listBoxConveyor.SelectedIndex);
-
-                    if (player2BidStrength >= player1BidStrength) {
-                        //Player 2 wins the bid
-                        showPlayerWonBid(2);
-
-                        foreach (Card c in chiefBid) {
-                            player2.DiscardPile.addCard(c);
-                        }
-                        for (int i = 3; i < listBoxPlayer1Bid.Items.Count; ++i) {
-                            Card c = (Card)listBoxPlayer1Bid.Items[i];
-                            player1.Hand.addCard(c);
-                        }
-
-                        if (boughtCard is ProductionUnitCard) {
-                            player2.ProductionUnits.addCard(boughtCard);
-                        } else {
-                            player2.DiscardPile.addCard(boughtCard);
-                        }
-
-                    } else {
-                        //Player 1 wins the bid
-                        showPlayerWonBid(1);
-
-                        for (int i = 3; i < listBoxPlayer1Bid.Items.Count; ++i) {
-                            Card c = (Card)listBoxPlayer1Bid.Items[i];
-                            player1.DiscardPile.addCard(c);
-                        }
-                        foreach (Card c in chiefBid) {
-                            player2.Hand.addCard(c);
-                        }
-
-                        if (boughtCard is ProductionUnitCard) {
-                            player1.ProductionUnits.addCard(boughtCard);
-                        } else {
-                            player1.DiscardPile.addCard(boughtCard);
-                        }
-                    }
-
-                    player1IsChief = true;
-                    player2IsChief = false;
-
-                    resetAuction();
+            if (listBoxPlayer1Bid.Items.Count == 3) {
+                if (player1.Hand.Count != 0) {
+                    MessageBox.Show("You must bid with at least one card.");
+                    return;
                 }
             }
+            if (player1IsChief) {
+                chiefBid = new List<Card>();
+                for (int i = 3; i < listBoxPlayer1Bid.Items.Count; ++i) {
+                    chiefBid.Add((Card)listBoxPlayer1Bid.Items[i]);
+                }
+
+                listBoxPlayer1Bid.Items.Clear();
+                listBoxPlayer1Bid.Items.Add("Cards bid: " + chiefBid.Count);
+                listBoxPlayer1Bid.SelectedIndex = -1;
+                listBoxPlayer1Bid.Enabled = false;
+
+                listBoxPlayer1Hand.Items.Clear();
+                listBoxPlayer1Hand.SelectedIndex = -1;
+                listBoxPlayer1Hand.Enabled = false;
+
+                buttonPlayer1AddCardToBid.Enabled = false;
+                buttonPlayer1RetrieveBid.Enabled = false;
+                buttonPlayer1Confirm.Enabled = false;
+
+                showPlayerBidInstruction(2);
+
+                listBoxPlayer2Hand.Enabled = true;
+                listBoxPlayer2Bid.Enabled = true;
+
+                buttonPlayer2AddCardToBid.Enabled = true;
+                buttonPlayer2RetrieveBid.Enabled = true;
+                buttonPlayer2Confirm.Enabled = true;
+
+                refreshListBoxPlayer2Hand();
+
+                listBoxPlayer2Bid.Items.Add(BID_STRENGTH_STRING + "0");
+                listBoxPlayer2Bid.Items.Add(CARD_LAYOUT_KEY);
+                listBoxPlayer2Bid.Items.Add("");
+
+                isPlayer2Turn = true;
+                isPlayer1Turn = false;
+            } else {
+                List<Card> tempP1BidCards = new List<Card>();
+
+                for (int i = 3; i < listBoxPlayer1Bid.Items.Count; ++i) {
+                    tempP1BidCards.Add((Card)listBoxPlayer1Bid.Items[i]);
+                }
+
+                //Clear player 1's listboxes here to avoid revealing information to to other player.
+                listBoxPlayer1Hand.Items.Clear();
+                listBoxPlayer1Bid.Items.Clear();
+
+                //Clear as the information is no longer relevant.
+                listBoxPlayer2Bid.Items.Clear();
+
+                int player1BidStrength = 0;
+                int player2BidStrength = 0;
+
+                foreach (Card c in chiefBid) {
+                    player2BidStrength += c.BidPower;
+                }
+                foreach (Card c in tempP1BidCards) {
+                    player1BidStrength += c.BidPower;
+                }
+
+                Card boughtCard = (Card)listBoxConveyor.Items[listBoxConveyor.SelectedIndex];
+                listBoxConveyor.Items.RemoveAt(listBoxConveyor.SelectedIndex);
+
+                if (player2BidStrength >= player1BidStrength && chiefBid.Count > 0) {
+                    //Player 2 wins the bid
+                    showPlayerWonBid(2);
+
+                    foreach (Card c in chiefBid) {
+                        player2.DiscardPile.addCard(c);
+                    }
+                    foreach (Card c in tempP1BidCards) {
+                        player1.addToHand(c);
+                    }
+
+                    if (boughtCard is ProductionUnitCard) {
+                        player2.ProductionUnits.addCard(boughtCard);
+                    } else {
+                        player2.DiscardPile.addCard(boughtCard);
+                    }
+
+                } else {
+                    //Player 1 wins the bid
+                    showPlayerWonBid(1);
+
+                    foreach (Card c in tempP1BidCards) {
+                        player1.DiscardPile.addCard(c);
+                    }
+                    foreach (Card c in chiefBid) {
+                        player2.addToHand(c);
+                    }
+
+                    if (boughtCard is ProductionUnitCard) {
+                        player1.ProductionUnits.addCard(boughtCard);
+                    } else {
+                        player1.DiscardPile.addCard(boughtCard);
+                    }
+                }
+
+                player1IsChief = true;
+                player2IsChief = false;
+
+                resetAuction();
+            }
+
         }
 
         /// <summary>
@@ -432,7 +423,11 @@ namespace Fzzzt_ {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void listBoxConveyor_SelectedIndexChanged(object sender, EventArgs e) {
-            listBoxConveyor.SelectedIndex = 3;
+            if (listBoxConveyor.Items.Count > 3) {
+                listBoxConveyor.SelectedIndex = 3;
+            } else {
+                listBoxConveyor.SelectedIndex = -1;
+            }
         }
 
         /// <summary>
@@ -441,7 +436,7 @@ namespace Fzzzt_ {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void buttonPlayer1AddCardToBid_Click(object sender, EventArgs e) {
-            if(listBoxPlayer1Hand.SelectedIndex < 3) {
+            if (listBoxPlayer1Hand.SelectedIndex < 3) {
                 MessageBox.Show("You must select one of your cards to bid.");
                 return;
             } else {
@@ -461,7 +456,7 @@ namespace Fzzzt_ {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void buttonPlayer1RetrieveBid_Click(object sender, EventArgs e) {
-            if(listBoxPlayer1Bid.SelectedIndex < 3) {
+            if (listBoxPlayer1Bid.SelectedIndex < 3) {
                 MessageBox.Show("You must select a card to return to your hand.");
                 return;
             } else {
@@ -481,15 +476,11 @@ namespace Fzzzt_ {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonPlayer2AddCardToBid_Click(object sender, EventArgs e)
-        {
-            if (listBoxPlayer2Hand.SelectedIndex < 3)
-            {
+        private void buttonPlayer2AddCardToBid_Click(object sender, EventArgs e) {
+            if (listBoxPlayer2Hand.SelectedIndex < 3) {
                 MessageBox.Show("You must select one of your cards to bid.");
                 return;
-            }
-            else
-            {
+            } else {
                 int index = listBoxPlayer2Hand.SelectedIndex - 3;
                 Card transfer = player2.Hand.drawCard(index);
                 listBoxPlayer2Bid.Items.Add(transfer);
@@ -505,15 +496,11 @@ namespace Fzzzt_ {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonPlayer2RetrieveBid_Click(object sender, EventArgs e)
-        {
-            if (listBoxPlayer2Bid.SelectedIndex < 3)
-            {
+        private void buttonPlayer2RetrieveBid_Click(object sender, EventArgs e) {
+            if (listBoxPlayer2Bid.SelectedIndex < 3) {
                 MessageBox.Show("You must select a card to return to your hand.");
                 return;
-            }
-            else
-            {
+            } else {
                 int index = listBoxPlayer2Bid.SelectedIndex;
                 Card transfer = (Card)listBoxPlayer2Bid.Items[index];
                 listBoxPlayer2Bid.Items.RemoveAt(index);
@@ -530,114 +517,207 @@ namespace Fzzzt_ {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonPlayer2Confirm_Click(object sender, EventArgs e)
-        {
+        private void buttonPlayer2Confirm_Click(object sender, EventArgs e) {
             if (listBoxPlayer2Bid.Items.Count == 3) {
-                MessageBox.Show("You must bid with at least one card.");
-                return;
-            } else {
-                if (player2IsChief) {
-                    chiefBid = new List<Card>();
-                    for (int i = 3; i < listBoxPlayer2Bid.Items.Count; ++i)
-                    {
-                        chiefBid.Add((Card)listBoxPlayer2Bid.Items[i]);
-                    }
-
-                    listBoxPlayer2Bid.Items.Clear();
-                    listBoxPlayer2Bid.Items.Add("Cards bid: " + chiefBid.Count);
-                    listBoxPlayer2Bid.SelectedIndex = -1;
-                    listBoxPlayer2Bid.Enabled = false;
-
-                    listBoxPlayer2Hand.Items.Clear();
-                    listBoxPlayer2Hand.SelectedIndex = -1;
-                    listBoxPlayer2Hand.Enabled = false;
-
-                    buttonPlayer2AddCardToBid.Enabled = false;
-                    buttonPlayer2RetrieveBid.Enabled = false;
-                    buttonPlayer2Confirm.Enabled = false;
-
-                    MessageBox.Show("Player 2, please place your bid by selecting cards to bid, and then confirming.");
-
-                    listBoxPlayer1Hand.Enabled = true;
-                    listBoxPlayer1Bid.Enabled = true;
-
-                    buttonPlayer1AddCardToBid.Enabled = true;
-                    buttonPlayer1RetrieveBid.Enabled = true;
-                    buttonPlayer1Confirm.Enabled = true;
-
-                    refreshListBoxPlayer1Hand();
-
-                    listBoxPlayer1Bid.Items.Add(BID_STRENGTH_STRING + "0");
-                    listBoxPlayer1Bid.Items.Add(CARD_LAYOUT_KEY);
-                    listBoxPlayer1Bid.Items.Add("");
-
-                    isPlayer1Turn = true;
-                    isPlayer2Turn = false;
-                } else {
-                    int player1BidStrength = 0;
-                    int player2BidStrength = 0;
-
-                    for(int i = 0; i < chiefBid.Count; ++i) {
-                        player1BidStrength += chiefBid[i].BidPower;
-                    }
-                    for (int i = 3; i < listBoxPlayer2Bid.Items.Count; ++i) {
-                        player2BidStrength += ((Card)listBoxPlayer2Bid.Items[i]).BidPower;
-                    }
-
-                    //Clear player 2's listboxes here to avoid revealing information to to other player.
-                    listBoxPlayer2Hand.Items.Clear();
-                    listBoxPlayer2Bid.Items.Clear();
-
-                    Card boughtCard = (Card)listBoxConveyor.Items[listBoxConveyor.SelectedIndex];
-                    listBoxConveyor.Items.RemoveAt(listBoxConveyor.SelectedIndex);
-
-                    if(player1BidStrength >= player2BidStrength) {
-                        //Player 1 wins the bid
-                        showPlayerWonBid(1);
-
-                        foreach(Card c in chiefBid) {
-                            player1.DiscardPile.addCard(c);
-                        }
-                        for (int i = 3; i < listBoxPlayer2Bid.Items.Count; ++i) {
-                            Card c = (Card)listBoxPlayer2Bid.Items[i];
-                            player2.Hand.addCard(c);
-                        }
-
-                        if(boughtCard is ProductionUnitCard) {
-                            player1.ProductionUnits.addCard(boughtCard);
-                        } else {
-                            player1.DiscardPile.addCard(boughtCard);
-                        }
-
-                    } else {
-                        //Player 2 wins the bid
-                        showPlayerWonBid(2);
-
-                        for (int i = 3; i < listBoxPlayer2Bid.Items.Count; ++i) {
-                            Card c = (Card)listBoxPlayer2Bid.Items[i];
-                            player2.DiscardPile.addCard(c);
-                        }
-                        foreach (Card c in chiefBid) {
-                            player1.Hand.addCard(c);
-                        }
-
-                        if (boughtCard is ProductionUnitCard) {
-                            player2.ProductionUnits.addCard(boughtCard);
-                        } else {
-                            player2.DiscardPile.addCard(boughtCard);
-                        }
-                    }
-
-                    player1IsChief = false;
-                    player2IsChief = true;
-
-                    resetAuction();
+                if (player2.Hand.Count != 0) {
+                    MessageBox.Show("You must bid with at least one card.");
+                    return;
                 }
+            }
+            if (player2IsChief) {
+                chiefBid = new List<Card>();
+                for (int i = 3; i < listBoxPlayer2Bid.Items.Count; ++i) {
+                    chiefBid.Add((Card)listBoxPlayer2Bid.Items[i]);
+                }
+
+                listBoxPlayer2Bid.Items.Clear();
+                listBoxPlayer2Bid.Items.Add("Cards bid: " + chiefBid.Count);
+                listBoxPlayer2Bid.SelectedIndex = -1;
+                listBoxPlayer2Bid.Enabled = false;
+
+                listBoxPlayer2Hand.Items.Clear();
+                listBoxPlayer2Hand.SelectedIndex = -1;
+                listBoxPlayer2Hand.Enabled = false;
+
+                buttonPlayer2AddCardToBid.Enabled = false;
+                buttonPlayer2RetrieveBid.Enabled = false;
+                buttonPlayer2Confirm.Enabled = false;
+
+                showPlayerBidInstruction(1);
+
+                listBoxPlayer1Hand.Enabled = true;
+                listBoxPlayer1Bid.Enabled = true;
+
+                buttonPlayer1AddCardToBid.Enabled = true;
+                buttonPlayer1RetrieveBid.Enabled = true;
+                buttonPlayer1Confirm.Enabled = true;
+
+                refreshListBoxPlayer1Hand();
+
+                listBoxPlayer1Bid.Items.Add(BID_STRENGTH_STRING + "0");
+                listBoxPlayer1Bid.Items.Add(CARD_LAYOUT_KEY);
+                listBoxPlayer1Bid.Items.Add("");
+
+                isPlayer1Turn = true;
+                isPlayer2Turn = false;
+            } else {
+                List<Card> tempP2BidCards = new List<Card>();
+
+                for (int i = 3; i < listBoxPlayer2Bid.Items.Count; ++i) {
+                    tempP2BidCards.Add((Card)listBoxPlayer2Bid.Items[i]);
+                }
+
+                //Clear player 2's listboxes here to avoid revealing information to to other player.
+                listBoxPlayer2Hand.Items.Clear();
+                listBoxPlayer2Bid.Items.Clear();
+
+                //Clear as the information is no longer relevant.
+                listBoxPlayer1Bid.Items.Clear();
+
+                int player1BidStrength = 0;
+                int player2BidStrength = 0;
+
+                foreach (Card c in chiefBid) {
+                    player1BidStrength += c.BidPower;
+                }
+                foreach (Card c in tempP2BidCards) {
+                    player2BidStrength += c.BidPower;
+                }
+
+                Card boughtCard = (Card)listBoxConveyor.Items[listBoxConveyor.SelectedIndex];
+                listBoxConveyor.Items.RemoveAt(listBoxConveyor.SelectedIndex);
+
+                if (player1BidStrength >= player2BidStrength && chiefBid.Count > 0) {
+                    //Player 1 wins the bid
+                    showPlayerWonBid(1);
+
+                    foreach (Card c in chiefBid) {
+                        player1.DiscardPile.addCard(c);
+                    }
+                    foreach (Card c in tempP2BidCards) {
+                        player2.addToHand(c);
+                    }
+
+                    if (boughtCard is ProductionUnitCard) {
+                        player1.ProductionUnits.addCard(boughtCard);
+                    } else {
+                        player1.DiscardPile.addCard(boughtCard);
+                    }
+
+                } else {
+                    //Player 2 wins the bid
+                    showPlayerWonBid(2);
+
+                    foreach (Card c in tempP2BidCards) {
+                        player2.DiscardPile.addCard(c);
+                    }
+                    foreach (Card c in chiefBid) {
+                        player1.addToHand(c);
+                    }
+
+                    if (boughtCard is ProductionUnitCard) {
+                        player2.ProductionUnits.addCard(boughtCard);
+                    } else {
+                        player2.DiscardPile.addCard(boughtCard);
+                    }
+                }
+
+                player1IsChief = false;
+                player2IsChief = true;
+
+                resetAuction();
+            }
+
+        }
+
+        /// <summary>
+        /// Resets the auction after one round of bidding has been completed.
+        /// </summary>
+        private void resetAuction() {
+            if (listBoxConveyor.Items.Count == 3) {
+                //The revealed cards have all been auctioned
+                if (conveyor.Count > 0) {
+                    //There are remaining cards to be auctioned
+
+                    //Take the first card from the conveyor
+                    Card temp = conveyor.drawCard();
+                    //Add the card to the listbox
+                    listBoxConveyor.Items.Add(temp);
+                    //Check the card's conveyor belt number and add more cards to the listbox if necessary
+                    int loopMax = temp.ConveyorBeltNumber - 1;
+                    int count = 0;
+                    while (count < loopMax && conveyor.Count > 0) {
+                        listBoxConveyor.Items.Add(conveyor.drawCard());
+                        count++;
+                    }
+                } else {
+                    //end auction round and do cleanup
+                    auctionCleanup();
+                    return;
+                }
+            }
+            //Update the information in the listbox to reflect the remaining number of cards.
+            listBoxConveyor.Items[0] = "Cards remaining: " + (conveyor.Count + listBoxConveyor.Items.Count - 3);
+            //Reselect the current card to be auctioned in the listbox.
+            listBoxConveyor.SelectedIndex = 3;
+
+            if (player1.Hand.Count == 0 && player2.Hand.Count == 0) {
+                player1.drawHand();
+                player2.drawHand();
+            }
+
+            if (player1IsChief) {
+                showPlayerBidInstruction(1);
+                refreshListBoxPlayer1Hand();
+
+                listBoxPlayer1Bid.Items.Add(BID_STRENGTH_STRING + "0");
+                listBoxPlayer1Bid.Items.Add(CARD_LAYOUT_KEY);
+                listBoxPlayer1Bid.Items.Add("");
+
+                isPlayer1Turn = true;
+                isPlayer2Turn = false;
+            } else {
+                showPlayerBidInstruction(2);
+                refreshListBoxPlayer2Hand();
+
+                listBoxPlayer2Bid.Items.Add(BID_STRENGTH_STRING + "0");
+                listBoxPlayer2Bid.Items.Add(CARD_LAYOUT_KEY);
+                listBoxPlayer2Bid.Items.Add("");
+
+                isPlayer2Turn = true;
+                isPlayer1Turn = false;
             }
         }
 
-        private void resetAuction() {
-            //TODO
+        /// <summary>
+        /// Starts the cleanup stage after auctions are completed, allowing players to place robots onto their production cards.
+        /// </summary>
+        private void auctionCleanup() {
+            //Player 2 will always go last in a round of auctions so only their controls need to be disabled.
+            buttonPlayer2AddCardToBid.Enabled = false;
+            buttonPlayer2RetrieveBid.Enabled = false;
+            buttonPlayer2Confirm.Enabled = false;
+
+            listBoxPlayer2Hand.Enabled = false;
+            listBoxPlayer2Bid.Enabled = false;
+
+            if (player1.ProductionUnits.Count > 0) {
+                isPlayer1Turn = true;
+                isPlayer2Turn = false;
+
+                showAuctionCleanupInstruction(1);
+            } else {
+                isPlayer1Turn = false;
+                isPlayer2Turn = true;
+
+                MessageBox.Show("Player 1, you have no production cards.");
+                showAuctionCleanupInstruction(2);
+            }
+
+            buttonAddProd.Enabled = true;
+            buttonNoAddProd.Enabled = true;
+
+            setUpListBoxProductionCard();
         }
 
         /// <summary>
@@ -646,7 +726,7 @@ namespace Fzzzt_ {
         private void refreshListBoxPlayer1Hand() {
             listBoxPlayer1Hand.Items.Clear();
 
-            listBoxPlayer1Hand.Items.Add("Cards in hand: " + player1.Hand.Cards.Count);
+            listBoxPlayer1Hand.Items.Add("Cards in hand: " + player1.Hand.Count);
             listBoxPlayer1Hand.Items.Add(CARD_LAYOUT_KEY);
             listBoxPlayer1Hand.Items.Add("");
             foreach (Card c in player1.Hand.Cards) {
@@ -660,7 +740,7 @@ namespace Fzzzt_ {
         private void refreshListBoxPlayer2Hand() {
             listBoxPlayer2Hand.Items.Clear();
 
-            listBoxPlayer2Hand.Items.Add("Cards in hand: " + player1.Hand.Cards.Count);
+            listBoxPlayer2Hand.Items.Add("Cards in hand: " + player2.Hand.Count);
             listBoxPlayer2Hand.Items.Add(CARD_LAYOUT_KEY);
             listBoxPlayer2Hand.Items.Add("");
             foreach (Card c in player2.Hand.Cards) {
@@ -684,16 +764,41 @@ namespace Fzzzt_ {
         /// <summary>
         /// Updates the bid strength displayed in player 2's bid listbox.
         /// </summary>
-        private void refreshPlayer2BidStrength()
-        {
+        private void refreshPlayer2BidStrength() {
             int bidStrength = 0;
-            for(int i = 3; i < listBoxPlayer1Bid.Items.Count; ++i)
-            {
+            for (int i = 3; i < listBoxPlayer2Bid.Items.Count; ++i) {
                 Card currentCard = (Card)listBoxPlayer2Bid.Items[i];
                 bidStrength += currentCard.BidPower;
             }
 
             listBoxPlayer2Bid.Items[0] = BID_STRENGTH_STRING + bidStrength;
+        }
+
+        private void setUpListBoxProductionCard() {
+            listBoxProductionCard.Items.Add(CARD_LAYOUT_KEY);
+            listBoxProductionCard.Items.Add("");
+
+            ReadOnlyCollection<Card> cards;
+
+            if (isPlayer1Turn) {
+                cards = player1.ProductionUnits.Cards;
+            } else {
+                cards = player2.ProductionUnits.Cards;
+            }
+
+            foreach (Card c in cards) {
+                listBoxProductionCard.Items.Add(c);
+            }
+
+            listBoxProductionCard.SelectedIndex = 2;
+        }
+
+        private void buttonAddProd_Click(object sender, EventArgs e) {
+            //TODO - check valid index selected, take card and add to prod card, move onto next prod until out of prod, then change to player 2
+        }
+
+        private void buttonNoAddProd_Click(object sender, EventArgs e) {
+            //TODO - move onto next prod until out of prod, then change to player 2
         }
     }
 }

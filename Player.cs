@@ -66,10 +66,10 @@ namespace Fzzzt_ {
                 return;
             }
 
-                this._discardPile.shuffle();
+            this._discardPile.shuffle();
 
             int count = 0;
-            while(count < 6 && this._discardPile.Cards.Count > 0) {
+            while(count < 6 && this._discardPile.Count > 0) {
                 this._hand.addCard(this._discardPile.drawCard());
                 ++count;
             }
