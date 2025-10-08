@@ -11,6 +11,9 @@ namespace Fzzzt_ {
         private Deck _discardPile = new Deck();
         private Deck _productionUnits = new Deck();
 
+        private int _score = 0;
+        private int _tiebreakerValue = 0;
+
         /// <summary>
         /// Returns a deck representing the player's hand.
         /// </summary>
@@ -30,6 +33,22 @@ namespace Fzzzt_ {
         /// </summary>
         public Deck ProductionUnits {
             get { return this._productionUnits; }
+        }
+
+        /// <summary>
+        /// The player's score
+        /// </summary>
+        public int Score {
+            get { return this._score; }
+            set { this._score = value; }
+        }
+
+        /// <summary>
+        /// The number of robot cards the player has purchased, used to settle tiebreakers.
+        /// </summary>
+        public int TiebreakerScore {
+            get { return this._tiebreakerValue; }
+            set { this._tiebreakerValue = value; }
         }
 
         /// <summary>

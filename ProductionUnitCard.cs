@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel.Design.Serialization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,8 +20,8 @@ namespace Fzzzt_ {
         //For counting at the end how many of each material was provided to the production card
         private int[] _materialsProvided = new int[4];
 
-        //For Storing the robooot cards that were placed on the production unit
-        private List<RobotCard> _cards = new List<RobotCard>();
+        //For Storing the robot cards that were placed on the production unit
+        private List<RobotCard> _robots = new List<RobotCard>();
 
         public ProductionUnitCard(int power, int score, int conveyorBeltNumber, bool[] materialsNeeded) : base(power, score, conveyorBeltNumber) {
             this._materialsNeeded = materialsNeeded;
@@ -31,6 +33,13 @@ namespace Fzzzt_ {
         /// </summary>
         public bool[] MaterialsNeeded {
             get { return this._materialsNeeded; }
+        }
+
+        /// <summary>
+        /// A read only collection of the robot cards assigneed to this production unit.
+        /// </summary>
+        public ReadOnlyCollection<RobotCard> Robots {
+            get { return new ReadOnlyCollection<RobotCard>(this._robots); }
         }
 
         /// <summary>
@@ -63,6 +72,10 @@ namespace Fzzzt_ {
         /// <returns></returns>
         public bool givesOil() {
             return this._materialsNeeded[3];
+        }
+
+        public void addRobot(RobotCard card) {
+            this._robots.Add(card);
         }
 
         public override string ToString() {

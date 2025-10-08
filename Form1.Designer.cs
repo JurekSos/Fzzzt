@@ -38,7 +38,7 @@
             this.listBoxProductionCard = new System.Windows.Forms.ListBox();
             this.buttonNoAddProd = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.labelConveyorBelt = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -52,6 +52,7 @@
             this.radioButtonGear = new System.Windows.Forms.RadioButton();
             this.radioButtonOil = new System.Windows.Forms.RadioButton();
             this.buttonProductionMaterialConfirm = new System.Windows.Forms.Button();
+            this.labelProdSets = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // listBoxConveyor
@@ -197,6 +198,7 @@
             this.listBoxProductionCard.Size = new System.Drawing.Size(774, 184);
             this.listBoxProductionCard.TabIndex = 14;
             this.listBoxProductionCard.Visible = false;
+            this.listBoxProductionCard.SelectedIndexChanged += new System.EventHandler(this.listBoxProductionCard_SelectedIndexChanged);
             // 
             // buttonNoAddProd
             // 
@@ -221,16 +223,16 @@
             this.label1.Text = "Player 2 Hand";
             this.label1.Visible = false;
             // 
-            // label2
+            // labelConveyorBelt
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label2.Location = new System.Drawing.Point(12, 219);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(107, 20);
-            this.label2.TabIndex = 19;
-            this.label2.Text = "Conveyor Belt";
-            this.label2.Visible = false;
+            this.labelConveyorBelt.AutoSize = true;
+            this.labelConveyorBelt.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.labelConveyorBelt.Location = new System.Drawing.Point(12, 219);
+            this.labelConveyorBelt.Name = "labelConveyorBelt";
+            this.labelConveyorBelt.Size = new System.Drawing.Size(107, 20);
+            this.labelConveyorBelt.TabIndex = 19;
+            this.labelConveyorBelt.Text = "Conveyor Belt";
+            this.labelConveyorBelt.Visible = false;
             // 
             // label3
             // 
@@ -271,9 +273,9 @@
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.label6.Location = new System.Drawing.Point(794, 296);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(160, 20);
+            this.label6.Size = new System.Drawing.Size(131, 20);
             this.label6.TabIndex = 23;
-            this.label6.Text = "Production Card Sets";
+            this.label6.Text = "Production Cards";
             this.label6.Visible = false;
             // 
             // buttonStart
@@ -383,12 +385,25 @@
             this.buttonProductionMaterialConfirm.Text = "Confirm";
             this.buttonProductionMaterialConfirm.UseVisualStyleBackColor = true;
             this.buttonProductionMaterialConfirm.Visible = false;
+            this.buttonProductionMaterialConfirm.Click += new System.EventHandler(this.buttonProductionMaterialConfirm_Click);
+            // 
+            // labelProdSets
+            // 
+            this.labelProdSets.AutoSize = true;
+            this.labelProdSets.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.labelProdSets.Location = new System.Drawing.Point(12, 219);
+            this.labelProdSets.Name = "labelProdSets";
+            this.labelProdSets.Size = new System.Drawing.Size(152, 20);
+            this.labelProdSets.TabIndex = 33;
+            this.labelProdSets.Text = "Production Card Set";
+            this.labelProdSets.Visible = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1584, 861);
+            this.Controls.Add(this.labelProdSets);
             this.Controls.Add(this.buttonProductionMaterialConfirm);
             this.Controls.Add(this.radioButtonOil);
             this.Controls.Add(this.radioButtonGear);
@@ -402,7 +417,7 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.labelConveyorBelt);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonNoAddProd);
             this.Controls.Add(this.listBoxProductionCard);
@@ -441,7 +456,7 @@
         private System.Windows.Forms.ListBox listBoxProductionCard;
         private System.Windows.Forms.Button buttonNoAddProd;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelConveyorBelt;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
@@ -455,6 +470,7 @@
         private System.Windows.Forms.RadioButton radioButtonGear;
         private System.Windows.Forms.RadioButton radioButtonOil;
         private System.Windows.Forms.Button buttonProductionMaterialConfirm;
+        private System.Windows.Forms.Label labelProdSets;
     }
 }
 

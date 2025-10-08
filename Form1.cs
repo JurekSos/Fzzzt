@@ -14,13 +14,11 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Fzzzt_ {
     public partial class Form1 : Form {
-        Action<int> showPlayerWonBid = (int x) => MessageBox.Show("Player " + x + " has won the bid.");
-        Action<int> showPlayerBidInstruction = (int x) => MessageBox.Show("Player " + x + ", please place your bid by selecting cards to bid, and then confirming." +
-                                                                          "\nIf you are out of cards, then just click the confirm button.");
-        Action<int> showAuctionCleanupInstruction = (int x) => MessageBox.Show("Player " + x + ", please select up to one card to add to the highlighted production card.");
-
         const string CARD_LAYOUT_KEY = "Card Type           Power     Score     Nuts      Bolts     Gears     Oil       ";
         const string BID_STRENGTH_STRING = "Current bid strength: ";
+
+        //The same listbox as the conveyor, but alised for a different purpose in the endgame stage.
+        ListBox listBoxProductionSets;
 
         //The main deck of cards in the game
         Deck deck;
@@ -35,8 +33,21 @@ namespace Fzzzt_ {
         //For determining which player is the chief mechanic
         bool player1IsChief;
         bool player2IsChief;
+        //For controlling the change of the production card listbox
+        bool canChangeProdIndex;
+        int prodIndex;
+        //For checking if all aucitons are over.
+        bool auctionsEnded;
+        bool choosingMaterials;
         //For storing the bid of the player who went first that round
         List<Card> chiefBid;
+
+
+        Action<int> showPlayerWonBid = (int x) => MessageBox.Show("Player " + x + " has won the bid.");
+        Action<int> showPlayerBidInstruction = (int x) => MessageBox.Show("Player " + x + ", please place your bid by selecting cards to bid, and then confirming." +
+                                                                          "\nIf you are out of cards, then just click the confirm button.");
+        Action<int> showAuctionCleanupInstruction = (int x) => MessageBox.Show("Player " + x + ", please select up to one card to add to the highlighted production card.");
+
 
         public Form1() {
             InitializeComponent();
@@ -44,6 +55,8 @@ namespace Fzzzt_ {
             initConveyor();
             initPlayers();
             initLogic();
+
+            listBoxProductionSets = listBoxConveyor;
         }
 
         private void buttonStart_Click(object sender, EventArgs e) {
@@ -68,8 +81,6 @@ namespace Fzzzt_ {
             //while (deck.Cards.Count > 8) {
             setupAuction();
 
-            startAuctionRound();
-
             //allow players to add up to 1 robot on each of their productions (auction cleanup)
             //}
             //Do final allocating of robot cards to production cards
@@ -82,7 +93,7 @@ namespace Fzzzt_ {
         private void showControls() {
             //show all labels
             label1.Visible = true;
-            label2.Visible = true;
+            labelConveyorBelt.Visible = true;
             label3.Visible = true;
             label4.Visible = true;
             label5.Visible = true;
@@ -120,6 +131,8 @@ namespace Fzzzt_ {
         /// Sets up the auction stage of the game.
         /// </summary>
         private void setupAuction() {
+            listBoxConveyor.Items.Clear();
+
             for (int i = 0; i < 8; ++i) {
                 conveyor.addCard(deck.drawCard());
             }
@@ -141,6 +154,13 @@ namespace Fzzzt_ {
 
             //Set the selected card to be the first one show on the conveyor
             listBoxConveyor.SelectedIndex = 3;
+
+            if (player1.Hand.Count == 0 && player2.Hand.Count == 0) {
+                player1.drawHand();
+                player2.drawHand();
+            }
+
+            startAuctionRound();
         }
 
         /// <summary>
@@ -206,6 +226,12 @@ namespace Fzzzt_ {
 
             player1IsChief = false;
             player2IsChief = false;
+
+            canChangeProdIndex = false;
+            prodIndex = -1;
+
+            auctionsEnded = false;
+            choosingMaterials = false;
 
             chiefBid = new List<Card>();
         }
@@ -379,7 +405,7 @@ namespace Fzzzt_ {
                     showPlayerWonBid(2);
 
                     foreach (Card c in chiefBid) {
-                        player2.DiscardPile.addCard(c);
+                        player2.addToDiscard(c);
                     }
                     foreach (Card c in tempP1BidCards) {
                         player1.addToHand(c);
@@ -388,7 +414,10 @@ namespace Fzzzt_ {
                     if (boughtCard is ProductionUnitCard) {
                         player2.ProductionUnits.addCard(boughtCard);
                     } else {
-                        player2.DiscardPile.addCard(boughtCard);
+                        player2.addToDiscard(boughtCard);
+                        if(boughtCard is RobotCard) {
+                            player2.TiebreakerScore++;
+                        }
                     }
 
                 } else {
@@ -396,7 +425,7 @@ namespace Fzzzt_ {
                     showPlayerWonBid(1);
 
                     foreach (Card c in tempP1BidCards) {
-                        player1.DiscardPile.addCard(c);
+                        player1.addToDiscard(c);
                     }
                     foreach (Card c in chiefBid) {
                         player2.addToHand(c);
@@ -405,7 +434,10 @@ namespace Fzzzt_ {
                     if (boughtCard is ProductionUnitCard) {
                         player1.ProductionUnits.addCard(boughtCard);
                     } else {
-                        player1.DiscardPile.addCard(boughtCard);
+                        player1.addToDiscard(boughtCard);
+                        if(boughtCard is RobotCard) {
+                            player1.TiebreakerScore++;
+                        }
                     }
                 }
 
@@ -592,7 +624,7 @@ namespace Fzzzt_ {
                     showPlayerWonBid(1);
 
                     foreach (Card c in chiefBid) {
-                        player1.DiscardPile.addCard(c);
+                        player1.addToDiscard(c);
                     }
                     foreach (Card c in tempP2BidCards) {
                         player2.addToHand(c);
@@ -601,7 +633,10 @@ namespace Fzzzt_ {
                     if (boughtCard is ProductionUnitCard) {
                         player1.ProductionUnits.addCard(boughtCard);
                     } else {
-                        player1.DiscardPile.addCard(boughtCard);
+                        player1.addToDiscard(boughtCard);
+                        if(boughtCard is RobotCard) {
+                            player1.TiebreakerScore++;
+                        }
                     }
 
                 } else {
@@ -609,7 +644,7 @@ namespace Fzzzt_ {
                     showPlayerWonBid(2);
 
                     foreach (Card c in tempP2BidCards) {
-                        player2.DiscardPile.addCard(c);
+                        player2.addToDiscard(c);
                     }
                     foreach (Card c in chiefBid) {
                         player1.addToHand(c);
@@ -618,7 +653,10 @@ namespace Fzzzt_ {
                     if (boughtCard is ProductionUnitCard) {
                         player2.ProductionUnits.addCard(boughtCard);
                     } else {
-                        player2.DiscardPile.addCard(boughtCard);
+                        player2.addToDiscard(boughtCard);
+                        if (boughtCard is RobotCard) {
+                            player2.TiebreakerScore++;
+                        }
                     }
                 }
 
@@ -711,13 +749,31 @@ namespace Fzzzt_ {
                 isPlayer2Turn = true;
 
                 MessageBox.Show("Player 1, you have no production cards.");
-                showAuctionCleanupInstruction(2);
+
+                if (player2.ProductionUnits.Count > 0) {
+                    showAuctionCleanupInstruction(2);
+                } else {
+                    MessageBox.Show("Player 2, you have no production cards.");
+
+                    buttonNoAddProd.Enabled = false;
+                    buttonAddProd.Enabled = false;
+
+                    listBoxProductionCard.Enabled = false;
+                    listBoxPlayer2Hand.Enabled = false;
+
+                    if (deck.Count >= 8) {
+                        setupAuction();
+                    } else {
+                        beginScoringPhase();
+                    }
+                    return;
+                }
             }
 
             buttonAddProd.Enabled = true;
             buttonNoAddProd.Enabled = true;
 
-            setUpListBoxProductionCard();
+            showProductionInformation();
         }
 
         /// <summary>
@@ -774,7 +830,27 @@ namespace Fzzzt_ {
             listBoxPlayer2Bid.Items[0] = BID_STRENGTH_STRING + bidStrength;
         }
 
+        /// <summary>
+        /// Calls the methods which put all the information necessary in the listboxes for when adding robots to production units.
+        /// </summary>
+        private void showProductionInformation() {
+            setUpListBoxProductionCard();
+
+            putAllPlayerCardsInHand();
+            if (isPlayer1Turn) {
+                refreshListBoxPlayer1Hand();
+            } else {
+                refreshListBoxPlayer2Hand();
+            }
+
+                labelConveyorBelt.Visible = false;
+            labelProdSets.Visible = true;
+            refreshProductionRobotInformation();
+        }
+
         private void setUpListBoxProductionCard() {
+            listBoxProductionCard.Enabled = true;
+
             listBoxProductionCard.Items.Add(CARD_LAYOUT_KEY);
             listBoxProductionCard.Items.Add("");
 
@@ -790,15 +866,360 @@ namespace Fzzzt_ {
                 listBoxProductionCard.Items.Add(c);
             }
 
-            listBoxProductionCard.SelectedIndex = 2;
+            changeProdIndex(2);
         }
 
+        /// <summary>
+        /// Moves all the player's non production cards into their hand.
+        /// </summary>
+        private void putAllPlayerCardsInHand() {
+            Player currentPlayer;
+            if (isPlayer1Turn) {
+                currentPlayer = player1;
+            } else {
+                currentPlayer = player2;
+            }
+            while (currentPlayer.DiscardPile.Count > 0) {
+                currentPlayer.addToHand(currentPlayer.DiscardPile.drawCard());
+            }
+        }
+
+        private void putAllplayerCardsInDiscard() {
+            Player currentPlayer;
+            if (isPlayer1Turn) {
+                currentPlayer = player1;
+            } else {
+                currentPlayer = player2;
+            }
+            while (currentPlayer.Hand.Count > 0) {
+                currentPlayer.addToDiscard(currentPlayer.Hand.drawCard());
+            }
+        }
+
+        /// <summary>
+        /// Puts the information about the robots currently on the selected production card into the listbox.
+        /// </summary>
+        private void refreshProductionRobotInformation() {
+            listBoxProductionSets.Items.Clear();
+
+            listBoxProductionSets.Items.Add(CARD_LAYOUT_KEY);
+            listBoxProductionSets.Items.Add("");
+
+            ProductionUnitCard selectedProdUnit = (ProductionUnitCard)listBoxProductionCard.Items[listBoxProductionCard.SelectedIndex];
+
+            foreach(RobotCard r in selectedProdUnit.Robots) {
+                listBoxProductionSets.Items.Add(r);
+            }
+        }
+
+        /// <summary>
+        /// Adds a valid selected robot card from the current player's deck to the selected production unit caard.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonAddProd_Click(object sender, EventArgs e) {
-            //TODO - check valid index selected, take card and add to prod card, move onto next prod until out of prod, then change to player 2
+            if (auctionsEnded) {
+                //User can select the index, so have to ensure that a valid production unit was selected.
+
+                if(listBoxProductionCard.SelectedIndex < 2) {
+                    MessageBox.Show("Please select a production unit on which to place the card.");
+                    return;
+                }
+            }
+
+
+            int ind = 0;
+            Card temp;
+            RobotCard candidate;
+            ProductionUnitCard selectedProdUnit = (ProductionUnitCard)listBoxProductionCard.Items[listBoxProductionCard.SelectedIndex];
+            bool materialMatch = false;
+
+            if (isPlayer1Turn) {
+                ind = listBoxPlayer1Hand.SelectedIndex;
+                if (ind >= 2) {
+                    temp = (Card)listBoxPlayer1Hand.Items[ind];
+                    if(temp is RobotCard) {
+                        candidate = (RobotCard)temp;
+
+                        //Check that the robot provides at least one material that the production unit needs.
+                        for(int i = 0; i < 4; ++i) {
+                            if (candidate.Materials[i] && selectedProdUnit.MaterialsNeeded[i]) {
+                                materialMatch = true;
+                                break;
+                            }
+                        }
+
+                        if (materialMatch) {
+                            //Add the robot to the production unit.
+                            selectedProdUnit.addRobot(candidate);
+
+                            //Remove the card from the player's hand.
+                            player1.Hand.drawCard(ind - 2);
+
+                            //Update the hand listbox
+                            refreshListBoxPlayer1Hand();
+
+                            if (!auctionsEnded) {
+                                //Move onto the next index.
+                                buttonNoAddProd_Click(sender, e);
+                            }
+                        } else {
+                            MessageBox.Show("Please select a card which provides one of the necessary materials.");
+                            return;
+                        }
+                    } else {
+                        MessageBox.Show("Please select a robot card to add.");
+                        return;
+                    }
+                } else {
+                    MessageBox.Show("Please select a card in your hand to add.");
+                    return;
+                }
+            } else {
+                ind = listBoxPlayer2Hand.SelectedIndex;
+                if (ind >= 2) {
+                    temp = (Card)listBoxPlayer2Hand.Items[ind];
+                    if (temp is RobotCard) {
+                        candidate = (RobotCard)temp;
+
+                        //Check that the robot provides at least one material that the production unit needs.
+                        for (int i = 0; i < 4; ++i) {
+                            if (candidate.Materials[i] && selectedProdUnit.MaterialsNeeded[i]) {
+                                materialMatch = true;
+                                break;
+                            }
+                        }
+
+                        if (materialMatch) {
+                            //Add the robot to the production unit.
+                            selectedProdUnit.addRobot(candidate);
+
+                            //Remove the card from the player's hand.
+                            player2.Hand.drawCard(ind - 2);
+
+                            //Update the hand listbox
+                            refreshListBoxPlayer2Hand();
+
+                            if (!auctionsEnded) {
+                                //Move onto the next index.
+                                buttonNoAddProd_Click(sender, e);
+                            }
+                        } else {
+                            MessageBox.Show("Please select a card which provides one of the necessary materials.");
+                            return;
+                        }
+                    } else {
+                        MessageBox.Show("Please select a robot card to add.");
+                        return;
+                    }
+                } else {
+                    MessageBox.Show("Please select a card in your hand to add.");
+                    return;
+                }
+            }
         }
 
+        /// <summary>
+        /// Does not add a card to the selected production unit card, and moves on.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonNoAddProd_Click(object sender, EventArgs e) {
-            //TODO - move onto next prod until out of prod, then change to player 2
+            int currentIndex = listBoxProductionCard.SelectedIndex;
+            //Check if end of listbox has been reached;
+            if(currentIndex < listBoxProductionCard.Items.Count - 1) {
+                MessageBox.Show("Done. Now repeat for the next card");
+                changeProdIndex(currentIndex + 1);
+            } else {
+                changeProdIndex(-1);
+                listBoxProductionCard.Items.Clear();
+
+                if (isPlayer1Turn) {
+                    putAllplayerCardsInDiscard();
+
+                    if (player2.ProductionUnits.Count > 0) {
+                        isPlayer1Turn = false;
+                        isPlayer2Turn = true;
+
+                        showAuctionCleanupInstruction(2);
+
+                        setUpListBoxProductionCard();
+                        return;
+                    } else {
+                        MessageBox.Show("Player 2, you have no production cards.");
+                    }
+                }
+                //Player 2 has completed and we start another auction round.
+
+                putAllplayerCardsInDiscard();
+
+                buttonNoAddProd.Enabled = false;
+                buttonAddProd.Enabled = false;
+
+                listBoxProductionCard.Enabled = false;
+                listBoxPlayer2Hand.Enabled = false;
+
+                if (deck.Count >= 8) {
+                    setupAuction();
+                } else {
+                    beginScoringPhase();
+                }
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Prevents the index of the listbox changing when it shouldn't.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void listBoxProductionCard_SelectedIndexChanged(object sender, EventArgs e) {
+            if (canChangeProdIndex) {
+                prodIndex = listBoxProductionCard.SelectedIndex;
+            } else {
+                listBoxProductionCard.SelectedIndex = prodIndex;
+            }
+        }
+
+        /// <summary>
+        /// Changes the selected index for the production card listbox.
+        /// </summary>
+        /// <param name="i"></param>
+        private void changeProdIndex(int i) {
+            canChangeProdIndex = true;
+            listBoxProductionCard.SelectedIndex = i;
+            canChangeProdIndex = false;
+        }
+
+        /// <summary>
+        /// Counts how many robot cards the player is still holding
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        private int countRobotCardsHeld(Player player) {
+            int count = 0;
+            foreach(Card c in player.Hand.Cards) {
+                if(c is RobotCard) {
+                    ++count;
+                }
+            }
+            return count;
+        }
+
+        private void end() {
+            if (player1.Score == player2.Score) {
+                if (player1.TiebreakerScore == player2.TiebreakerScore) {
+                    MessageBox.Show("It's a tie!");
+                } else if (player1.TiebreakerScore < player2.TiebreakerScore) {
+                    MessageBox.Show("Player 1 has won!");
+                } else {
+                    MessageBox.Show("Player 2 has won!");
+                }
+            } else if (player1.Score > player2.Score) {
+                MessageBox.Show("Player 1 has won!");
+            } else {
+                MessageBox.Show("Player 2 has won!");
+            }
+            Application.Exit();
+        }
+
+        /// <summary>
+        /// Begins the scoring phase at the end of the game, where players place all their robots on production cards, assign their materials, and tally up their total score.
+        /// </summary>
+        private void beginScoringPhase() {
+            auctionsEnded = true;
+
+            if (player1.ProductionUnits.Count > 0) {
+                MessageBox.Show("Player 1, please place each of your robot cards onto a production unit." +
+                                "\nYou can now select specific production unit cards to place each card on." +
+                                "\nOnce you are done, click confirm.");
+
+                isPlayer1Turn = true;
+                isPlayer2Turn = false;
+
+                listBoxPlayer1Hand.Enabled = true;
+
+                showProductionInformation();
+            } else if (player2.ProductionUnits.Count > 0) {
+                MessageBox.Show("Player 1, you have no production units.");
+                MessageBox.Show("Player 2, please place each of your robot cards onto a production unit." +
+                                "\nYou can now select specific production unit cards to place each card on." +
+                                "\nOnce you are done, click confirm.");
+
+                isPlayer1Turn = false;
+                isPlayer2Turn = true;
+
+                listBoxPlayer2Hand.Enabled = true;
+
+                showProductionInformation();
+            } else {
+                MessageBox.Show("Player 2, you have no production units.");
+                tallyPoints();
+                return;
+            }
+
+            labelConveyorBelt.Visible = false;
+            labelProdSets.Visible = true;
+
+            listBoxProductionSets.Enabled = true;
+            listBoxProductionCard.Enabled = true;
+
+            buttonAddProd.Enabled = true;
+            buttonProductionMaterialConfirm.Enabled = true;
+
+            //Lets the user now change the index themselves.
+            canChangeProdIndex = true;
+            
+        }
+
+
+        private void tallyPoints() {
+            //TODO
+
+            end();
+        }
+
+        private void buttonProductionMaterialConfirm_Click(object sender, EventArgs e) {
+            if (choosingMaterials) {
+                //TODO - assigning each material to the production card.
+
+                //tallyPoints();
+            } else {
+                if (isPlayer1Turn) {
+                    int remainingRobots = countRobotCardsHeld(player1);
+                    if (remainingRobots > 0) {
+                        MessageBox.Show("You must assign all your robot cards to a production card before continuing.");
+                        return;
+                    } else {
+                        isPlayer1Turn = false;
+                        isPlayer2Turn = true;
+
+                        listBoxPlayer1Hand.Items.Clear();
+
+                        MessageBox.Show("Player 2, please place each of your robot cards onto a production unit." +
+                                        "\nYou can now select specific production unit cards to place each card on." +
+                                        "\nOnce you are done, click confirm.");
+
+                        listBoxPlayer1Hand.Enabled = false;
+                        listBoxPlayer2Hand.Enabled = true;
+
+                        showProductionInformation();
+                    }
+                } else {
+                    int remainingRobots = countRobotCardsHeld(player2);
+                    if (remainingRobots > 0) {
+                        MessageBox.Show("You must assign all your robot cards to a production card before continuing.");
+                        return;
+                    } else {
+                        isPlayer1Turn = true;
+                        isPlayer2Turn = false;
+
+                        listBoxPlayer2Hand.Items.Clear();
+
+                        //TODO - material assigning stage.
+                    }
+                }
+            }
         }
     }
 }
