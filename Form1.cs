@@ -79,7 +79,7 @@ namespace Fzzzt_ {
             deck.shuffle();
 
             //while (deck.Cards.Count > 8) {
-            setupAuction();
+            setUpAuction();
 
             //allow players to add up to 1 robot on each of their productions (auction cleanup)
             //}
@@ -130,7 +130,7 @@ namespace Fzzzt_ {
         /// <summary>
         /// Sets up the auction stage of the game.
         /// </summary>
-        private void setupAuction() {
+        private void setUpAuction() {
             listBoxConveyor.Items.Clear();
 
             for (int i = 0; i < 8; ++i) {
@@ -762,7 +762,7 @@ namespace Fzzzt_ {
                     listBoxPlayer2Hand.Enabled = false;
 
                     if (deck.Count >= 8) {
-                        setupAuction();
+                        setUpAuction();
                     } else {
                         beginScoringPhase();
                     }
@@ -1060,7 +1060,7 @@ namespace Fzzzt_ {
                 listBoxPlayer2Hand.Enabled = false;
 
                 if (deck.Count >= 8) {
-                    setupAuction();
+                    setUpAuction();
                 } else {
                     beginScoringPhase();
                 }
@@ -1174,7 +1174,45 @@ namespace Fzzzt_ {
 
 
         private void tallyPoints() {
-            //TODO
+            foreach (Card c in player1.DiscardPile.Cards) {
+                player1.Score += c.Score;
+            }
+            foreach (Card c in player1.Hand.Cards) {
+                player1.Score += c.Score;
+            }
+            foreach (ProductionUnitCard p in player1.ProductionUnits.Cards) {
+                foreach(Card c in p.Robots) {
+                    player1.Score += c.Score;
+                }
+                //Count sets
+                int sets = p.countSets();
+
+                if(sets == 0) {
+                    player1.Score -= p.Score;
+                } else {
+                    player1.Score += p.Score * sets;
+                }
+            }
+
+            foreach (Card c in player2.DiscardPile.Cards) {
+                player2.Score += c.Score;
+            }
+            foreach (Card c in player2.Hand.Cards) {
+                player2.Score += c.Score;
+            }
+            foreach (ProductionUnitCard p in player2.ProductionUnits.Cards) {
+                foreach (Card c in p.Robots) {
+                    player2.Score += c.Score;
+                }
+                //Count sets
+                int sets = p.countSets();
+
+                if (sets == 0) {
+                    player2.Score -= p.Score;
+                } else {
+                    player2.Score += p.Score * sets;
+                }
+            }
 
             end();
         }
@@ -1216,10 +1254,14 @@ namespace Fzzzt_ {
 
                         listBoxPlayer2Hand.Items.Clear();
 
-                        //TODO - material assigning stage.
+                        setUpMaterialAssignment();
                     }
                 }
             }
+        }
+
+        private void setUpMaterialAssignment() {
+            //TODO
         }
     }
 }

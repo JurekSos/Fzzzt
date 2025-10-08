@@ -78,6 +78,28 @@ namespace Fzzzt_ {
             this._robots.Add(card);
         }
 
+        public int countSets() {
+            int ret = 0;
+            bool notSet = true;
+
+            for(int i = 0; i < 4; ++i) {
+                if (this._materialsNeeded[i]) {
+                    //If the current material is required
+                    int num = this._materialsProvided[i];
+                    if (notSet) {
+                        ret = num;
+                        notSet = false;
+                    } else {
+                        if (num < ret) {
+                            ret = num;
+                        }
+                    }
+                }
+            }
+
+            return ret;
+        }
+
         public override string ToString() {
             string ret = "Production Unit".PadRight(20) + base.ToString();
 
