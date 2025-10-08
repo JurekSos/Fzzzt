@@ -46,7 +46,7 @@ namespace Fzzzt_ {
         /// Returns a bool representing if the production unit requires the nut material.
         /// </summary>
         /// <returns></returns>
-        public bool givesNut() {
+        public bool needsNut() {
             return this._materialsNeeded[0];
         }
 
@@ -54,7 +54,7 @@ namespace Fzzzt_ {
         /// Returns a bool representing if the production unit requires the bolt material.
         /// </summary>
         /// <returns></returns>
-        public bool givesBolt() {
+        public bool needsBolt() {
             return this._materialsNeeded[1];
         }
 
@@ -62,7 +62,7 @@ namespace Fzzzt_ {
         /// Returns a bool representing if the production unit requires the gear material.
         /// </summary>
         /// <returns></returns>
-        public bool givesGear() {
+        public bool needsGear() {
             return this._materialsNeeded[2];
         }
 
@@ -70,8 +70,64 @@ namespace Fzzzt_ {
         /// Returns a bool representing if the production unit requires the oil material.
         /// </summary>
         /// <returns></returns>
-        public bool givesOil() {
+        public bool needsOil() {
             return this._materialsNeeded[3];
+        }
+
+        /// <summary>
+        /// Increases the number of nuts provided by 1.
+        /// </summary>
+        public void addNut() {
+            this._materialsProvided[0]++;
+        }
+
+        /// <summary>
+        /// Increases the number of bolts provided by 1.
+        /// </summary>
+        public void addBolt() {
+            this._materialsProvided[1]++;
+        }
+
+        /// <summary>
+        /// Increases the number of gear provided by 1.
+        /// </summary>
+        public void addGear() {
+            this._materialsProvided[2]++;
+        }
+
+        /// <summary>
+        /// Increases the number of oil provided by 1.
+        /// </summary>
+        public void addOil() {
+            this._materialsProvided[3]++;
+        }
+
+        /// <summary>
+        /// The number of nuts provided to this production unit.
+        /// </summary>
+        public int NutsProvided {
+            get { return this._materialsProvided[0]; }
+        }
+
+        /// <summary>
+        /// The number of bolts provided to this production unit.
+        /// </summary>
+        public int BoltsProvided {
+            get { return this._materialsProvided[1]; }
+        }
+
+        /// <summary>
+        /// The number of gears provided to this production unit.
+        /// </summary>
+        public int GearsProvided {
+            get { return this._materialsProvided[2]; }
+        }
+
+        /// <summary>
+        /// The amount of oil provided to this production unit.
+        /// </summary>
+        public int OilProvided {
+            get { return this._materialsProvided[3]; }
         }
 
         public void addRobot(RobotCard card) {

@@ -11,6 +11,8 @@ namespace Fzzzt_ {
         private Deck _discardPile = new Deck();
         private Deck _productionUnits = new Deck();
 
+        private bool _isChief = false;
+
         private int _score = 0;
         private int _tiebreakerValue = 0;
 
@@ -33,6 +35,14 @@ namespace Fzzzt_ {
         /// </summary>
         public Deck ProductionUnits {
             get { return this._productionUnits; }
+        }
+
+        /// <summary>
+        /// Whether or not the player is the chief engineer.
+        /// </summary>
+        public bool IsChief {
+            get { return this._isChief; }
+            set { this._isChief = value; }
         }
 
         /// <summary>
