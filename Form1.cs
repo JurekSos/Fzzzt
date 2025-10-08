@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
-
+//test
 namespace Fzzzt_ {
     public partial class Form1 : Form {
         const string CARD_LAYOUT_KEY = "Card Type           Power     Score     Nuts      Bolts     Gears     Oil       ";
