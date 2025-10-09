@@ -54,6 +54,11 @@ namespace Fzzzt_ {
             listBoxProductionSets = listBoxConveyor;
         }
 
+        /// <summary>
+        /// Starts the game.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonStart_Click(object sender, EventArgs e) {
             buttonStart.Enabled = false;
             buttonStart.Visible = false;
@@ -73,18 +78,12 @@ namespace Fzzzt_ {
             //Shuffle the deck before starting
             deck.shuffle();
 
-            //while (deck.Cards.Count > 8) {
             setUpAuction();
-
-            //allow players to add up to 1 robot on each of their productions (auction cleanup)
-            //}
-            //Do final allocating of robot cards to production cards
-
-            //Make players decide on material distribution
-
-            //
         }
 
+        /// <summary>
+        /// Reveals the controls.
+        /// </summary>
         private void showControls() {
             //show all labels
             label1.Visible = true;
@@ -168,7 +167,7 @@ namespace Fzzzt_ {
         private void startAuctionRound() {
             player1.IsChief = true;
             player2.IsChief = false;
-            //p1 places bid
+            
             showPlayerBidInstruction(1);
 
             buttonPlayer1AddCardToBid.Enabled = true;
@@ -251,7 +250,7 @@ namespace Fzzzt_ {
         /// </summary>
         private void initRobotCards() {
             //1 power cards
-            /*
+            
             this.deck.addCard(new RobotCard(1, 1, 4, new bool[] { true, false, true, false }));
             this.deck.addCard(new RobotCard(1, 1, 4, new bool[] { true, false, false, true }));
             this.deck.addCard(new RobotCard(1, 1, 4, new bool[] { true, false, false, false }));
@@ -284,13 +283,12 @@ namespace Fzzzt_ {
             this.deck.addCard(new RobotCard(4, 3, 2, new bool[] { false, true, false, false }));
             this.deck.addCard(new RobotCard(4, 3, 2, new bool[] { false, false, true, false }));
             this.deck.addCard(new RobotCard(4, 3, 2, new bool[] { false, false, false, true }));
-            */
+            
             //5 power cards
             this.deck.addCard(new RobotCard(5, 3, 1, new bool[] { true, false, false, false }));
             this.deck.addCard(new RobotCard(5, 3, 1, new bool[] { false, true, false, false }));
             this.deck.addCard(new RobotCard(5, 3, 1, new bool[] { false, false, true, false }));
             this.deck.addCard(new RobotCard(5, 3, 1, new bool[] { false, false, false, true }));
-            
 
             //Robot upgrade cards
             this.deck.addCard(new RobotCard(0, 0, 8, new bool[] { true, true, true, true }));
@@ -301,7 +299,6 @@ namespace Fzzzt_ {
         /// Initialises all the production cards and adds them to the main deck
         /// </summary>
         private void initProductionCards() {
-            /*
             this.deck.addCard(new ProductionUnitCard(0, 13, 3, new bool[] { true, true, true, true }));
             this.deck.addCard(new ProductionUnitCard(0, 9, 3, new bool[] { true, true, true, false }));
             this.deck.addCard(new ProductionUnitCard(0, 9, 3, new bool[] { true, true, true, false }));
@@ -310,7 +307,6 @@ namespace Fzzzt_ {
             this.deck.addCard(new ProductionUnitCard(0, 6, 3, new bool[] { true, false, false, true }));
             this.deck.addCard(new ProductionUnitCard(0, 6, 3, new bool[] { false, true, false, true }));
             this.deck.addCard(new ProductionUnitCard(0, 5, 3, new bool[] { true, true, false, false }));
-            */
             this.deck.addCard(new ProductionUnitCard(0, 6, 3, new bool[] { false, false, true, true }));
             this.deck.addCard(new ProductionUnitCard(0, 3, 3, new bool[] { false, false, false, true }));
         }
@@ -319,12 +315,10 @@ namespace Fzzzt_ {
         /// Initialises all the fzzzt cards and adds them to the main deck
         /// </summary>
         private void initFzzztCards() {
-            /*
             this.deck.addCard(new FzzztCard());
             this.deck.addCard(new FzzztCard());
             this.deck.addCard(new FzzztCard());
             this.deck.addCard(new FzzztCard());
-            */
         }
 
         /// <summary>
@@ -344,6 +338,10 @@ namespace Fzzzt_ {
                 for (int i = 3; i < listBoxPlayer1Bid.Items.Count; ++i) {
                     chiefBid.Add((Card)listBoxPlayer1Bid.Items[i]);
                 }
+
+                /*
+                Disable player 1 controls and enable player 2 controls 
+                */
 
                 listBoxPlayer1Bid.Items.Clear();
                 listBoxPlayer1Bid.Items.Add("Cards bid: " + chiefBid.Count);
@@ -566,6 +564,10 @@ namespace Fzzzt_ {
                     chiefBid.Add((Card)listBoxPlayer2Bid.Items[i]);
                 }
 
+                /*
+                Disable player 2 controls and enable player 1 controls. 
+                */
+
                 listBoxPlayer2Bid.Items.Clear();
                 listBoxPlayer2Bid.Items.Add("Cards bid: " + chiefBid.Count);
                 listBoxPlayer2Bid.SelectedIndex = -1;
@@ -736,8 +738,6 @@ namespace Fzzzt_ {
             buttonPlayer1RetrieveBid.Enabled = false;
             buttonPlayer1Confirm.Enabled = false;
 
-            //Not disabled because it is needded for player 1 to add their cards.
-            //NOT DONE - listBoxPlayer1Hand.Enabled = false;
             listBoxPlayer1Bid.Enabled = false;
 
             buttonPlayer2AddCardToBid.Enabled = false;
@@ -860,6 +860,9 @@ namespace Fzzzt_ {
             refreshProductionRobotInformation();
         }
 
+        /// <summary>
+        /// Displays the player's production unit cards in the production unit card listbox.
+        /// </summary>
         private void setUpListBoxProductionCard() {
             listBoxProductionCard.Enabled = true;
 
@@ -897,6 +900,9 @@ namespace Fzzzt_ {
             }
         }
 
+        /// <summary>
+        /// Moves all cards in the player's hand to their discard pile.
+        /// </summary>
         private void putAllplayerCardsInDiscard() {
             Player currentPlayer;
             if (isPlayer1Turn) {
@@ -1141,6 +1147,9 @@ namespace Fzzzt_ {
             return count;
         }
 
+        /// <summary>
+        /// Displays the victor and ends the game.
+        /// </summary>
         private void end() {
             if (player1.Score == player2.Score) {
                 if (player1.TiebreakerScore == player2.TiebreakerScore) {
@@ -1205,7 +1214,9 @@ namespace Fzzzt_ {
             
         }
 
-
+        /// <summary>
+        /// Counts the score for each player.
+        /// </summary>
         private void tallyPoints() {
             foreach (Card c in player1.DiscardPile.Cards) {
                 player1.Score += c.Score;
@@ -1250,6 +1261,11 @@ namespace Fzzzt_ {
             end();
         }
 
+        /// <summary>
+        /// Confirms that the player is done placing cards on their production units, or that they haave selected a material to be contributed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonProductionMaterialConfirm_Click(object sender, EventArgs e) {
             if (choosingMaterials) {
                 ProductionUnitCard currentProdUnit = (ProductionUnitCard)listBoxProductionCard.SelectedItem;
@@ -1358,6 +1374,9 @@ namespace Fzzzt_ {
             }
         }
 
+        /// <summary>
+        /// Sets up the material assignment stage of the game.
+        /// </summary>
         private void setUpMaterialAssignment() {
             choosingMaterials = true;
             canChangeProdIndex = false;
