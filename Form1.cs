@@ -126,6 +126,9 @@ namespace Fzzzt_ {
         /// Sets up the auction stage of the game.
         /// </summary>
         private void setUpAuction() {
+            labelConveyorBelt.Visible = true;
+            labelProdSets.Visible = false;
+
             listBoxConveyor.Items.Clear();
 
             for (int i = 0; i < 8; ++i) {
@@ -447,9 +450,10 @@ namespace Fzzzt_ {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void listBoxConveyor_SelectedIndexChanged(object sender, EventArgs e) {
-            if (listBoxConveyor.Items.Count > 3 && !auctionsEnded) {
+            //First check is if the conveyor belt is being displayed, the second check is for when production sets are being displayed and can be selected.
+            if (listBoxConveyor.Items.Count > 3 && labelConveyorBelt.Enabled) {
                 listBoxConveyor.SelectedIndex = 3;
-            } else if (listBoxConveyor.Items.Count > 4) {
+            } else if (listBoxConveyor.Items.Count > 4 && choosingMaterials) {
                 listBoxConveyor.SelectedIndex = 4;
             } else {
                 listBoxConveyor.SelectedIndex = -1;
@@ -721,8 +725,15 @@ namespace Fzzzt_ {
         /// <summary>
         /// Starts the cleanup stage after auctions are completed, allowing players to place robots onto their production cards.
         /// </summary>
-        private void auctionCleanup() {
-            //Player 2 will always go last in a round of auctions so only their controls need to be disabled.
+        private void auctionCleanup() { 
+            buttonPlayer1AddCardToBid.Enabled = false;
+            buttonPlayer1RetrieveBid.Enabled = false;
+            buttonPlayer1Confirm.Enabled = false;
+
+            //Not disabled because it is needded for player 1 to add their cards.
+            //NOT DONE - listBoxPlayer1Hand.Enabled = false;
+            listBoxPlayer1Bid.Enabled = false;
+
             buttonPlayer2AddCardToBid.Enabled = false;
             buttonPlayer2RetrieveBid.Enabled = false;
             buttonPlayer2Confirm.Enabled = false;
@@ -741,6 +752,9 @@ namespace Fzzzt_ {
 
                 if (player2.ProductionUnits.Count > 0) {
                     showAuctionCleanupInstruction(2);
+
+                    listBoxPlayer1Hand.Enabled = false;
+                    listBoxPlayer2Hand.Enabled = true;
                 } else {
                     MessageBox.Show("Player 2, you have no production cards.");
 
@@ -832,7 +846,7 @@ namespace Fzzzt_ {
                 refreshListBoxPlayer2Hand();
             }
 
-                labelConveyorBelt.Visible = false;
+            labelConveyorBelt.Visible = false;
             labelProdSets.Visible = true;
             refreshProductionRobotInformation();
         }
@@ -927,7 +941,7 @@ namespace Fzzzt_ {
 
             if (isPlayer1Turn) {
                 ind = listBoxPlayer1Hand.SelectedIndex;
-                if (ind >= 2) {
+                if (ind >= 3) {
                     temp = (Card)listBoxPlayer1Hand.Items[ind];
                     if(temp is RobotCard) {
                         candidate = (RobotCard)temp;
@@ -945,7 +959,7 @@ namespace Fzzzt_ {
                             selectedProdUnit.addRobot(candidate);
 
                             //Remove the card from the player's hand.
-                            player1.Hand.drawCard(ind - 2);
+                            player1.Hand.drawCard(ind - 3);
 
                             //Update the hand listbox
                             refreshListBoxPlayer1Hand();
@@ -970,7 +984,7 @@ namespace Fzzzt_ {
                 }
             } else {
                 ind = listBoxPlayer2Hand.SelectedIndex;
-                if (ind >= 2) {
+                if (ind >= 3) {
                     temp = (Card)listBoxPlayer2Hand.Items[ind];
                     if (temp is RobotCard) {
                         candidate = (RobotCard)temp;
@@ -988,7 +1002,7 @@ namespace Fzzzt_ {
                             selectedProdUnit.addRobot(candidate);
 
                             //Remove the card from the player's hand.
-                            player2.Hand.drawCard(ind - 2);
+                            player2.Hand.drawCard(ind - 3);
 
                             //Update the hand listbox
                             refreshListBoxPlayer2Hand();
@@ -1029,6 +1043,8 @@ namespace Fzzzt_ {
                 changeProdIndex(-1);
                 listBoxProductionCard.Items.Clear();
 
+                listBoxPlayer1Hand.Items.Clear();
+
                 if (isPlayer1Turn) {
                     putAllplayerCardsInDiscard();
 
@@ -1037,7 +1053,9 @@ namespace Fzzzt_ {
 
                         showAuctionCleanupInstruction(2);
 
-                        setUpListBoxProductionCard();
+                        listBoxPlayer2Hand.Enabled = true;
+
+                        showProductionInformation();
                         return;
                     } else {
                         MessageBox.Show("Player 2, you have no production cards.");
@@ -1046,6 +1064,8 @@ namespace Fzzzt_ {
                 //Player 2 has completed and we start another auction round.
 
                 putAllplayerCardsInDiscard();
+
+                listBoxPlayer2Hand.Items.Clear();
 
                 buttonNoAddProd.Enabled = false;
                 buttonAddProd.Enabled = false;
@@ -1070,8 +1090,8 @@ namespace Fzzzt_ {
         private void listBoxProductionCard_SelectedIndexChanged(object sender, EventArgs e) {
             if (canChangeProdIndex) {
                 prodIndex = listBoxProductionCard.SelectedIndex;
-                if (auctionsEnded) {
-                    refreshProductionRobotInformation();
+                if (prodIndex > 1) {
+                    refreshProductionRobotInformation();    
                 }
             } else {
                 listBoxProductionCard.SelectedIndex = prodIndex;
@@ -1214,7 +1234,6 @@ namespace Fzzzt_ {
 
         private void buttonProductionMaterialConfirm_Click(object sender, EventArgs e) {
             if (choosingMaterials) {
-                //TODO - assigning each material to the production card.
                 ProductionUnitCard currentProdUnit = (ProductionUnitCard)listBoxProductionCard.SelectedItem;
                 if (radioButtonNut.Checked) {
                     currentProdUnit.addNut();
@@ -1296,37 +1315,25 @@ namespace Fzzzt_ {
 
             } else {
                 if (isPlayer1Turn) {
-                    int remainingRobots = countRobotCardsHeld(player1);
-                    if (remainingRobots > 0) {
-                        MessageBox.Show("You must assign all your robot cards to a production card before continuing.");
-                        return;
-                    } else {
-                        isPlayer1Turn = false;
+                    isPlayer1Turn = false;
 
-                        listBoxPlayer1Hand.Items.Clear();
+                    listBoxPlayer1Hand.Items.Clear();
 
-                        MessageBox.Show("Player 2, please place each of your robot cards onto a production unit." +
-                                        "\nYou can now select specific production unit cards to place each card on." +
-                                        "\nOnce you are done, click confirm.");
+                    MessageBox.Show("Player 2, please place each of your robot cards onto a production unit." +
+                                    "\nYou can now select specific production unit cards to place each card on." +
+                                    "\nOnce you are done, click confirm.");
 
-                        listBoxPlayer1Hand.Enabled = false;
-                        listBoxPlayer2Hand.Enabled = true;
+                    listBoxPlayer1Hand.Enabled = false;
+                    listBoxPlayer2Hand.Enabled = true;
 
-                        showProductionInformation();
-                    }
+                    showProductionInformation();
                 } else {
-                    int remainingRobots = countRobotCardsHeld(player2);
-                    if (remainingRobots > 0) {
-                        MessageBox.Show("You must assign all your robot cards to a production card before continuing.");
-                        return;
-                    } else {
-                        isPlayer1Turn = true;
+                    isPlayer1Turn = true;
 
-                        listBoxPlayer2Hand.Items.Clear();
-                        listBoxPlayer2Hand.Enabled = false;
+                    listBoxPlayer2Hand.Items.Clear();
+                    listBoxPlayer2Hand.Enabled = false;
 
-                        setUpMaterialAssignment();
-                    }
+                    setUpMaterialAssignment();
                 }
             }
         }
