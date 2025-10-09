@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
-//test
 namespace Fzzzt_ {
     public partial class Form1 : Form {
         const string CARD_LAYOUT_KEY = "Card Type           Power     Score     Nuts      Bolts     Gears     Oil       ";
@@ -1235,7 +1234,6 @@ namespace Fzzzt_ {
 
         private void buttonProductionMaterialConfirm_Click(object sender, EventArgs e) {
             if (choosingMaterials) {
-                //TODO - assigning each material to the production card.
                 ProductionUnitCard currentProdUnit = (ProductionUnitCard)listBoxProductionCard.SelectedItem;
                 if (radioButtonNut.Checked) {
                     currentProdUnit.addNut();
@@ -1317,39 +1315,25 @@ namespace Fzzzt_ {
 
             } else {
                 if (isPlayer1Turn) {
-                    //Remove this - let the player not place all robots
-                    int remainingRobots = countRobotCardsHeld(player1);
-                    if (remainingRobots > 0) {
-                        MessageBox.Show("You must assign all your robot cards to a production card before continuing.");
-                        return;
-                    } else {
-                        isPlayer1Turn = false;
+                    isPlayer1Turn = false;
 
-                        listBoxPlayer1Hand.Items.Clear();
+                    listBoxPlayer1Hand.Items.Clear();
 
-                        MessageBox.Show("Player 2, please place each of your robot cards onto a production unit." +
-                                        "\nYou can now select specific production unit cards to place each card on." +
-                                        "\nOnce you are done, click confirm.");
+                    MessageBox.Show("Player 2, please place each of your robot cards onto a production unit." +
+                                    "\nYou can now select specific production unit cards to place each card on." +
+                                    "\nOnce you are done, click confirm.");
 
-                        listBoxPlayer1Hand.Enabled = false;
-                        listBoxPlayer2Hand.Enabled = true;
+                    listBoxPlayer1Hand.Enabled = false;
+                    listBoxPlayer2Hand.Enabled = true;
 
-                        showProductionInformation();
-                    }
+                    showProductionInformation();
                 } else {
-                    //Remove this - let the player not place all robots
-                    int remainingRobots = countRobotCardsHeld(player2);
-                    if (remainingRobots > 0) {
-                        MessageBox.Show("You must assign all your robot cards to a production card before continuing.");
-                        return;
-                    } else {
-                        isPlayer1Turn = true;
+                    isPlayer1Turn = true;
 
-                        listBoxPlayer2Hand.Items.Clear();
-                        listBoxPlayer2Hand.Enabled = false;
+                    listBoxPlayer2Hand.Items.Clear();
+                    listBoxPlayer2Hand.Enabled = false;
 
-                        setUpMaterialAssignment();
-                    }
+                    setUpMaterialAssignment();
                 }
             }
         }
