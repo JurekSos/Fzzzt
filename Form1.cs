@@ -764,6 +764,8 @@ namespace Fzzzt_ {
                     listBoxProductionCard.Enabled = false;
                     listBoxPlayer2Hand.Enabled = false;
 
+                    resetHands();
+
                     if (deck.Count >= 8) {
                         setUpAuction();
                     } else {
@@ -837,6 +839,7 @@ namespace Fzzzt_ {
         /// Calls the methods which put all the information necessary in the listboxes for when adding robots to production units.
         /// </summary>
         private void showProductionInformation() {
+            listBoxProductionCard.Items.Clear();
             setUpListBoxProductionCard();
 
             putAllPlayerCardsInHand();
@@ -1376,6 +1379,20 @@ namespace Fzzzt_ {
             if (firstRobot.givesOil() && firstProdUnit.needsOil()) {
                 radioButtonOil.Enabled = true;
             }
+        }
+
+        /// <summary>
+        /// Empties both player's hands into their respective discard piles.
+        /// </summary>
+        private void resetHands() {
+            bool inital = isPlayer1Turn;
+
+            isPlayer1Turn = true;
+            putAllplayerCardsInDiscard();
+            isPlayer1Turn = false;
+            putAllplayerCardsInDiscard();
+
+            isPlayer1Turn = inital;
         }
     }
 }
