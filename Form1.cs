@@ -451,10 +451,10 @@ namespace Fzzzt_ {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void listBoxConveyor_SelectedIndexChanged(object sender, EventArgs e) {
-            //First check is if the conveyor belt is being displayed, the second check is for when production sets are being displayed.
+            //First check is if the conveyor belt is being displayed, the second check is for when production sets are being displayed and can be selected.
             if (listBoxConveyor.Items.Count > 3 && labelConveyorBelt.Enabled) {
                 listBoxConveyor.SelectedIndex = 3;
-            } else if (listBoxConveyor.Items.Count > 4) {
+            } else if (listBoxConveyor.Items.Count > 4 && choosingMaterials) {
                 listBoxConveyor.SelectedIndex = 4;
             } else {
                 listBoxConveyor.SelectedIndex = -1;
