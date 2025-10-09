@@ -451,7 +451,8 @@ namespace Fzzzt_ {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void listBoxConveyor_SelectedIndexChanged(object sender, EventArgs e) {
-            if (listBoxConveyor.Items.Count > 3 && !auctionsEnded) {
+            //First check is if the conveyor belt is being displayed, the second check is for when production sets are being displayed.
+            if (listBoxConveyor.Items.Count > 3 && labelConveyorBelt.Enabled) {
                 listBoxConveyor.SelectedIndex = 3;
             } else if (listBoxConveyor.Items.Count > 4) {
                 listBoxConveyor.SelectedIndex = 4;
@@ -1316,6 +1317,7 @@ namespace Fzzzt_ {
 
             } else {
                 if (isPlayer1Turn) {
+                    //Remove this - let the player not place all robots
                     int remainingRobots = countRobotCardsHeld(player1);
                     if (remainingRobots > 0) {
                         MessageBox.Show("You must assign all your robot cards to a production card before continuing.");
@@ -1335,6 +1337,7 @@ namespace Fzzzt_ {
                         showProductionInformation();
                     }
                 } else {
+                    //Remove this - let the player not place all robots
                     int remainingRobots = countRobotCardsHeld(player2);
                     if (remainingRobots > 0) {
                         MessageBox.Show("You must assign all your robot cards to a production card before continuing.");
