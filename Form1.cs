@@ -251,6 +251,7 @@ namespace Fzzzt_ {
         /// </summary>
         private void initRobotCards() {
             //1 power cards
+            /*
             this.deck.addCard(new RobotCard(1, 1, 4, new bool[] { true, false, true, false }));
             this.deck.addCard(new RobotCard(1, 1, 4, new bool[] { true, false, false, true }));
             this.deck.addCard(new RobotCard(1, 1, 4, new bool[] { true, false, false, false }));
@@ -283,12 +284,13 @@ namespace Fzzzt_ {
             this.deck.addCard(new RobotCard(4, 3, 2, new bool[] { false, true, false, false }));
             this.deck.addCard(new RobotCard(4, 3, 2, new bool[] { false, false, true, false }));
             this.deck.addCard(new RobotCard(4, 3, 2, new bool[] { false, false, false, true }));
-
+            */
             //5 power cards
             this.deck.addCard(new RobotCard(5, 3, 1, new bool[] { true, false, false, false }));
             this.deck.addCard(new RobotCard(5, 3, 1, new bool[] { false, true, false, false }));
             this.deck.addCard(new RobotCard(5, 3, 1, new bool[] { false, false, true, false }));
             this.deck.addCard(new RobotCard(5, 3, 1, new bool[] { false, false, false, true }));
+            
 
             //Robot upgrade cards
             this.deck.addCard(new RobotCard(0, 0, 8, new bool[] { true, true, true, true }));
@@ -299,6 +301,7 @@ namespace Fzzzt_ {
         /// Initialises all the production cards and adds them to the main deck
         /// </summary>
         private void initProductionCards() {
+            /*
             this.deck.addCard(new ProductionUnitCard(0, 13, 3, new bool[] { true, true, true, true }));
             this.deck.addCard(new ProductionUnitCard(0, 9, 3, new bool[] { true, true, true, false }));
             this.deck.addCard(new ProductionUnitCard(0, 9, 3, new bool[] { true, true, true, false }));
@@ -307,6 +310,7 @@ namespace Fzzzt_ {
             this.deck.addCard(new ProductionUnitCard(0, 6, 3, new bool[] { true, false, false, true }));
             this.deck.addCard(new ProductionUnitCard(0, 6, 3, new bool[] { false, true, false, true }));
             this.deck.addCard(new ProductionUnitCard(0, 5, 3, new bool[] { true, true, false, false }));
+            */
             this.deck.addCard(new ProductionUnitCard(0, 6, 3, new bool[] { false, false, true, true }));
             this.deck.addCard(new ProductionUnitCard(0, 3, 3, new bool[] { false, false, false, true }));
         }
@@ -315,10 +319,12 @@ namespace Fzzzt_ {
         /// Initialises all the fzzzt cards and adds them to the main deck
         /// </summary>
         private void initFzzztCards() {
+            /*
             this.deck.addCard(new FzzztCard());
             this.deck.addCard(new FzzztCard());
             this.deck.addCard(new FzzztCard());
             this.deck.addCard(new FzzztCard());
+            */
         }
 
         /// <summary>
@@ -451,7 +457,7 @@ namespace Fzzzt_ {
         /// <param name="e"></param>
         private void listBoxConveyor_SelectedIndexChanged(object sender, EventArgs e) {
             //First check is if the conveyor belt is being displayed, the second check is for when production sets are being displayed and can be selected.
-            if (listBoxConveyor.Items.Count > 3 && labelConveyorBelt.Enabled) {
+            if (listBoxConveyor.Items.Count > 3 && labelConveyorBelt.Visible) {
                 listBoxConveyor.SelectedIndex = 3;
             } else if (listBoxConveyor.Items.Count > 4 && choosingMaterials) {
                 listBoxConveyor.SelectedIndex = 4;
@@ -857,6 +863,7 @@ namespace Fzzzt_ {
         private void setUpListBoxProductionCard() {
             listBoxProductionCard.Enabled = true;
 
+            listBoxProductionCard.Items.Clear();
             listBoxProductionCard.Items.Add(CARD_LAYOUT_KEY);
             listBoxProductionCard.Items.Add("");
 
@@ -919,6 +926,14 @@ namespace Fzzzt_ {
             foreach(RobotCard r in selectedProdUnit.Robots) {
                 listBoxProductionSets.Items.Add(r);
             }
+        }
+
+        /// <summary>
+        /// Updates the numbers for materials provided in the production sets listbox
+        /// </summary>
+        private void refreshProductionUnitMaterials() {
+            ProductionUnitCard selectedProdUnit = (ProductionUnitCard)listBoxProductionCard.Items[listBoxProductionCard.SelectedIndex];
+            listBoxProductionSets.Items[0] = "Current production unit has " + selectedProdUnit.NutsProvided + " nuts, " + selectedProdUnit.BoltsProvided + " bolts, " + selectedProdUnit.GearsProvided + " gears, and " + selectedProdUnit.OilProvided + " oil.";
         }
 
         /// <summary>
@@ -1150,7 +1165,7 @@ namespace Fzzzt_ {
             auctionsEnded = true;
 
             if (player1.ProductionUnits.Count > 0) {
-                MessageBox.Show("Player 1, please place each of your robot cards onto a production unit." +
+                MessageBox.Show("Player 1, please place your robot cards onto your production units." +
                                 "\nYou can now select specific production unit cards to place each card on." +
                                 "\nOnce you are done, click confirm.");
 
@@ -1161,7 +1176,7 @@ namespace Fzzzt_ {
                 showProductionInformation();
             } else if (player2.ProductionUnits.Count > 0) {
                 MessageBox.Show("Player 1, you have no production units.");
-                MessageBox.Show("Player 2, please place each of your robot cards onto a production unit." +
+                MessageBox.Show("Player 2, please place your robot cards onto your production units." +
                                 "\nYou can now select specific production unit cards to place each card on." +
                                 "\nOnce you are done, click confirm.");
 
@@ -1251,13 +1266,14 @@ namespace Fzzzt_ {
                     return;
                 }
 
-                int remainingRobots = listBoxProductionSets.Items.Count - 4;
+                int remainingRobots = listBoxProductionSets.Items.Count - 5;
                 int currentUnitIndex = listBoxProductionCard.SelectedIndex;
 
                 if(remainingRobots > 0) {
                     //Remove the current robot from the listbox, moving onto the next one
                     listBoxProductionSets.Items.RemoveAt(4);
-                    refreshProductionRobotInformation();
+
+                    refreshProductionUnitMaterials();
                     //Doesn't return
                 } else {
                     if(currentUnitIndex < listBoxProductionCard.Items.Count - 1) {
@@ -1288,6 +1304,7 @@ namespace Fzzzt_ {
                     }
                 }
                 //Update the radio buttons to reflect the new robot card
+                listBoxProductionSets.SelectedIndex = 4;
 
                 RobotCard newRobot = (RobotCard)listBoxProductionSets.Items[listBoxProductionSets.SelectedIndex];
                 ProductionUnitCard newProdUnit = (ProductionUnitCard)listBoxProductionCard.Items[listBoxProductionCard.SelectedIndex];
@@ -1345,6 +1362,9 @@ namespace Fzzzt_ {
             choosingMaterials = true;
             canChangeProdIndex = false;
 
+
+            buttonAddProd.Enabled = false;
+
             if (player1.ProductionUnits.Count > 0) {
                 MessageBox.Show("Player 1, please select the material that will be provided by each robot card to each production card." +
                                 "\nOnce you are done, click confirm.");
@@ -1363,6 +1383,9 @@ namespace Fzzzt_ {
 
             setUpListBoxProductionCard();
             refreshProductionRobotInformation();
+
+            //updates the selected index, this change will be overwritten in the selected index changed method of the listbox.
+            listBoxProductionSets.SelectedIndex = 0;
 
             RobotCard firstRobot = (RobotCard)listBoxProductionSets.Items[listBoxProductionSets.SelectedIndex];
             ProductionUnitCard firstProdUnit = (ProductionUnitCard)listBoxProductionCard.Items[listBoxProductionCard.SelectedIndex];
